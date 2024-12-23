@@ -15,10 +15,13 @@ public:
     std::string fatherName;      // 父亲姓名，如果没有父亲则为空
 
     Member();
+    Member(const Member& member);
     Member(const std::string& name);
     Member(const std::string& name, const std::string& birthDate, bool isMarried, const std::string& address, bool isAlive, const std::string& deathDate, const std::string& fatherName);
 
-    void Print();
+    Member& operator=(const Member& member);
+
+    void Print() const;
 
     // ...其他成员函数声明...
 };

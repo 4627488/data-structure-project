@@ -35,17 +35,8 @@ int main() {
                 std::string name;
                 std::cout << "请输入姓名：";
                 std::cin >> name;
-                Member* member = familyTree.findMemberByName(name);
-                if (member) {
-                    std::cout << "姓名：" << member->name << std::endl;
-                    std::cout << "出生日期：" << member->birthDate << std::endl;
-                    std::cout << "婚否：" << (member->isMarried ? "是" : "否") << std::endl;
-                    std::cout << "地址：" << member->address << std::endl;
-                    std::cout << "健在否：" << (member->isAlive ? "是" : "否") << std::endl;
-                    std::cout << "死亡日期：" << member->deathDate << std::endl;
-                } else {
-                    std::cout << "未找到该成员。" << std::endl;
-                }
+                auto member = familyTree.findMemberByName(name);
+                member.Print();
                 break;
             }
             case 4: {

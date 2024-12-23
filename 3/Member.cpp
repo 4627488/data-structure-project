@@ -16,7 +16,26 @@ Member::Member(const std::string &name, const std::string &birthDate, bool isMar
 {
 }
 
-void Member::Print()
+Member::Member(const Member &member)
+    : name(member.name), birthDate(member.birthDate), isMarried(member.isMarried), address(member.address), isAlive(member.isAlive), deathDate(member.deathDate), fatherName(member.fatherName)
+{
+}
+
+Member& Member::operator=(const Member &member)
+{
+    if (this != &member) {
+        name = member.name;
+        birthDate = member.birthDate;
+        isMarried = member.isMarried;
+        address = member.address;
+        isAlive = member.isAlive;
+        deathDate = member.deathDate;
+        fatherName = member.fatherName;
+    }
+    return *this;
+}
+
+void Member::Print() const 
 {
     std::cout << "姓名：" << name << std::endl;
     std::cout << "出生日期：" << birthDate << std::endl;

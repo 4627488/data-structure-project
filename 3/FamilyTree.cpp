@@ -3,14 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
-FamilyTree::FamilyTree() {
-    // ...初始化...
-}
-
-FamilyTree::~FamilyTree() {
-    // ...释放资源...
-}
+#include <functional>
 
 void FamilyTree::loadFromFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -80,16 +73,50 @@ void FamilyTree::saveToFile(const std::string& filename) {
 }
 
 void FamilyTree::displayFamilyTree() {
-    // ...实现显示家谱的功能...
+    std::function<void(const std::string&, int)> displayMember = [&](const std::string& name, int level) {
+        for (int i = 0; i < level; ++i) {
+            std::cout << "  ";
+        }
+        std::cout << "|-- " << name << std::endl;
+        if (children.find(name) != children.end()) {
+            for (const auto& child : children[name]) {
+                displayMember(child, level + 1);
+            }
+        }
+    };
+
+    for (const auto& member : members) {
+        if (member.second.fatherName.empty()) {
+            displayMember(member.first, 0);
+        }
+    }
 }
 
 void FamilyTree::displayGeneration(int n) {
-    // ...实现显示第 n 代所有人信息的功能...
+    std::function<void(const std::string&, int)> displayGen = [&](const std::string& name, int level) {
+        if (level == n) {
+            std::cout << "=== 第 " << n << " 代 ===" << std::endl;
+            members[name].Print();
+        }
+        if (children.find(name) != children.end()) {
+            for (const auto& child : children[name]) {
+                displayGen(child, level + 1);
+            }
+        }
+    };
+
+    for (const auto& member : members) {
+        if (member.second.fatherName.empty()) {
+            displayGen(member.first, 0);
+        }
+    }
 }
 
-Member* FamilyTree::findMemberByName(const std::string& name) {
-    // ...实现按姓名查找成员的功能...
-    return nullptr;
+Member& FamilyTree::findMemberByName(const std::string& name) {
+    if (members.find(name) == members.end()) {
+        throw std::runtime_error("Member not found");
+    }
+    return members[name];
 }
 
 void FamilyTree::searchByBirthDate(const std::string& date) {

@@ -15,7 +15,7 @@
 
 1. 编译项目：
     ```sh
-    g++ -o json_parser main.cpp json_parser.cpp
+    make
     ```
 
 2. 运行项目：
@@ -47,5 +47,4 @@ std::cout << "city: " << parser.query("city") << std::endl; // 输出: New York
 
 ## 注意事项
 
-- 该解析器目前只支持简单的JSON对象和字符串类型的值。
-- 对于更复杂的JSON结构（如数组、布尔值等），需要进一步扩展解析器的功能。
+- 该解析器目前支持简单的JSON对象、字符串类型的值、布尔值和列表。

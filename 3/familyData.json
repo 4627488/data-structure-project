@@ -16,7 +16,7 @@
     "address": "123 Main St",
     "isAlive": "true",
     "deathDate": "",
-    "fatherName": ""
+    "fatherName": "John"
   },
   "Alice": {
     "name": "Alice",

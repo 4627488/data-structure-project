@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <functional>
+#include <unordered_map>
 
 void FamilyTree::loadFromFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -30,6 +31,9 @@ void FamilyTree::loadFromFile(const std::string& filename) {
             memberParser.query("deathDate"),
             memberParser.query("fatherName")
         );
+        if (member.fatherName.empty()) {
+            rootName = key;
+        }
         members[key] = member;
     }
 
@@ -85,10 +89,10 @@ void FamilyTree::displayFamilyTree() {
         }
     };
 
-    for (const auto& member : members) {
-        if (member.second.fatherName.empty()) {
-            displayMember(member.first, 0);
-        }
+    if (!rootName.empty()) {
+        displayMember(rootName, 0);
+    } else {
+        std::cerr << "家谱根节点未找到。" << std::endl;
     }
 }
 
@@ -105,38 +109,162 @@ void FamilyTree::displayGeneration(int n) {
         }
     };
 
-    for (const auto& member : members) {
-        if (member.second.fatherName.empty()) {
-            displayGen(member.first, 0);
-        }
+    if (!rootName.empty()) {
+        displayGen(rootName, 0);
+    } else {
+        std::cerr << "家谱根节点未找到。" << std::endl;
     }
 }
 
 Member& FamilyTree::findMemberByName(const std::string& name) {
     if (members.find(name) == members.end()) {
-        throw std::runtime_error("Member not found");
+        throw std::runtime_error("未找到成员");
     }
     return members[name];
 }
 
 void FamilyTree::searchByBirthDate(const std::string& date) {
-    // ...实现按出生日期查询成员的功能...
+    for (const auto& member : members) {
+        if (member.second.birthDate == date) {
+            member.second.Print();
+        }
+    }
 }
 
 void FamilyTree::determineRelationship(const std::string& name1, const std::string& name2) {
-    // ...实现确定两人关系的功能...
+    std::unordered_map<std::string, int> depth;
+    std::function<void(const std::string&, int)> calculateDepth = [&](const std::string& name, int level) {
+        depth[name] = level;
+        if (children.find(name) != children.end()) {
+            for (const auto& child : children[name]) {
+                calculateDepth(child, level + 1);
+            }
+        }
+    };
+
+    if (!rootName.empty()) {
+        calculateDepth(rootName, 0);
+    } else {
+        std::cerr << "家谱根节点未找到。" << std::endl;
+        return;
+    }
+
+    if (depth.find(name1) == depth.end() || depth.find(name2) == depth.end()) {
+        std::cerr << "未找到成员。" << std::endl;
+        return;
+    }
+
+    int depth1 = depth[name1];
+    int depth2 = depth[name2];
+
+    if (depth1 == depth2) {
+        std::cout << name1 << " 和 " << name2 << " 是同一代人。" << std::endl;
+    } else if (depth1 < depth2) {
+        std::cout << name1 << " 是 " << name2 << " 的长辈。" << std::endl;
+    } else {
+        std::cout << name2 << " 是 " << name1 << " 的长辈。" << std::endl;
+    }
 }
 
 void FamilyTree::addChild(const std::string& parentName, Member child) {
-    // ...实现添加孩子的功能...
+    if (members.find(parentName) == members.end()) {
+        throw std::runtime_error("未找到父母成员");
+    }
+    child.fatherName = parentName;
+    members[child.name] = child;
+    children[parentName].push_back(child.name);
 }
 
 void FamilyTree::deleteMember(const std::string& name) {
-    // ...实现删除成员的功能...
+    if (members.find(name) == members.end()) {
+        throw std::runtime_error("未找到成员");
+    }
+
+    // 递归删除成员的孩子
+    if (children.find(name) != children.end()) {
+        for (const auto& child : children[name]) {
+            deleteMember(child);
+        }
+        children.erase(name);
+    }
+
+    // 从父母的孩子列表中删除该成员
+    if (!members[name].fatherName.empty()) {
+        auto& siblings = children[members[name].fatherName];
+        for(auto it = siblings.begin(); it != siblings.end(); ++it) {
+            if (*it == name) {
+                siblings.erase(it);
+                break;
+            }
+        }
+    }
+
+    // 删除成员
+    members.erase(name);
 }
 
 void FamilyTree::modifyMember(const std::string& name) {
-    // ...实现修改成员信息的功能...
+    if (members.find(name) == members.end()) {
+        throw std::runtime_error("未找到成员");
+    }
+
+    Member& member = members[name];
+    std::cout << "修改成员信息：" << std::endl;
+    std::cout << "当前姓名：" << member.name << std::endl;
+    std::cout << "请输入新姓名（按 Enter 保持不变）：";
+    std::string newName;
+    std::getline(std::cin >> std::ws, newName);
+    if (!newName.empty()) {
+        member.name = newName;
+    }
+
+    std::cout << "当前出生日期：" << member.birthDate << std::endl;
+    std::cout << "请输入新出生日期（按 Enter 保持不变）：";
+    std::string newBirthDate;
+    std::getline(std::cin, newBirthDate);
+    if (!newBirthDate.empty()) {
+        member.birthDate = newBirthDate;
+    }
+
+    std::cout << "当前婚否：" << (member.isMarried ? "是" : "否") << std::endl;
+    std::cout << "请输入新婚否（true/false，按 Enter 保持不变）：";
+    std::string newIsMarried;
+    std::getline(std::cin, newIsMarried);
+    if (!newIsMarried.empty()) {
+        member.isMarried = (newIsMarried == "true");
+    }
+
+    std::cout << "当前地址：" << member.address << std::endl;
+    std::cout << "请输入新地址（按 Enter 保持不变）：";
+    std::string newAddress;
+    std::getline(std::cin, newAddress);
+    if (!newAddress.empty()) {
+        member.address = newAddress;
+    }
+
+    std::cout << "当前健在否：" << (member.isAlive ? "是" : "否") << std::endl;
+    std::cout << "请输入新健在否（true/false，按 Enter 保持不变）：";
+    std::string newIsAlive;
+    std::getline(std::cin, newIsAlive);
+    if (!newIsAlive.empty()) {
+        member.isAlive = (newIsAlive == "true");
+    }
+
+    std::cout << "当前死亡日期：" << member.deathDate << std::endl;
+    std::cout << "请输入新死亡日期（按 Enter 保持不变）：";
+    std::string newDeathDate;
+    std::getline(std::cin, newDeathDate);
+    if (!newDeathDate.empty()) {
+        member.deathDate = newDeathDate;
+    }
+
+    std::cout << "当前父亲姓名：" << member.fatherName << std::endl;
+    std::cout << "请输入新父亲姓名（按 Enter 保持不变）：";
+    std::string newFatherName;
+    std::getline(std::cin, newFatherName);
+    if (!newFatherName.empty()) {
+        member.fatherName = newFatherName;
+    }
 }
 
 // ...其他成员函数实现...

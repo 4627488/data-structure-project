@@ -1,10 +1,11 @@
 #include "FamilyTree.h"
 #include <iostream>
 
+const std::string FAMILY_DATA_FILE = "familyData.json";
+
 int main() {
     FamilyTree familyTree;
-    familyTree.loadFromFile("familyData.json");
-    familyTree.saveToFile("familyData2.json");
+    familyTree.loadFromFile(FAMILY_DATA_FILE);
     int choice;
     do {
         std::cout << "======= 家谱管理系统 =======" << std::endl;
@@ -80,7 +81,7 @@ int main() {
                 break;
             }
             case 9:
-                familyTree.saveToFile("familyData.txt");
+                familyTree.saveToFile(FAMILY_DATA_FILE);
                 std::cout << "数据已保存，程序退出。" << std::endl;
                 break;
             default:

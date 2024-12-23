@@ -21,9 +21,10 @@ Member::Member(const Member &member)
 {
 }
 
-Member& Member::operator=(const Member &member)
+Member &Member::operator=(const Member &member)
 {
-    if (this != &member) {
+    if (this != &member)
+    {
         name = member.name;
         birthDate = member.birthDate;
         isMarried = member.isMarried;
@@ -35,13 +36,24 @@ Member& Member::operator=(const Member &member)
     return *this;
 }
 
-void Member::Print() const 
+void Member::Print() const
 {
+    std::cout << "=== 成员信息 ===" << std::endl;
     std::cout << "姓名：" << name << std::endl;
     std::cout << "出生日期：" << birthDate << std::endl;
     std::cout << "婚否：" << (isMarried ? "是" : "否") << std::endl;
     std::cout << "地址：" << address << std::endl;
     std::cout << "健在否：" << (isAlive ? "是" : "否") << std::endl;
-    std::cout << "死亡日期：" << deathDate << std::endl;
-    std::cout << "父亲姓名：" << fatherName << std::endl;
+    if (!isAlive)
+    {
+        std::cout << "死亡日期：" << deathDate << std::endl;
+    }
+    if (!fatherName.empty())
+    {
+        std::cout << "父亲姓名：" << fatherName << std::endl;
+    }
+    else
+    {
+        std::cout << "是家谱根节点" << std::endl;
+    }
 }

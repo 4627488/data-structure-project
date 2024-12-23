@@ -4,5 +4,10 @@
 !*/
 !*.*
 
+# 允许 Makefile 上传
+!Makefile
+
 .vscode/
 ~$*
+bin/
+obj/

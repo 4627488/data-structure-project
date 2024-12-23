@@ -1,4 +1,5 @@
 #include "FamilyTree.h"
+#include "json_parser.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,55 +15,67 @@ FamilyTree::~FamilyTree() {
 void FamilyTree::loadFromFile(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "无法打开文件: " << filename << std::endl;
-        return;
+        throw std::runtime_error("无法打开文件");
     }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        std::istringstream iss(line);
-        std::string name, birthDate, address, deathDate, fatherName;
-        bool isMarried, isAlive;
-
-        std::getline(iss, name, '|');
-        std::getline(iss, birthDate, '|');
-        iss >> isMarried;
-        iss.ignore(1, '|');
-        std::getline(iss, address, '|');
-        iss >> isAlive;
-        iss.ignore(1, '|');
-        std::getline(iss, deathDate, '|');
-        std::getline(iss, fatherName, '|');
-
-        Member* member = new Member(name, birthDate, isMarried, address, isAlive, deathDate, nullptr);
-        members[name] = member;
-
-        if (!fatherName.empty()) {
-            member->father = members[fatherName];
-        }
-    }
-
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string jsonString = buffer.str();
     file.close();
+
+    JsonParser parser(jsonString);
+    std::vector<std::string> memberKeys = parser.queryList("members");
+    for (const auto& key : memberKeys) {
+        std::string memberJson = parser.query(key);
+        JsonParser memberParser(memberJson);
+        Member member(
+            memberParser.query("name"),
+            memberParser.query("birthDate"),
+            memberParser.query("isMarried") == "true",
+            memberParser.query("address"),
+            memberParser.query("isAlive") == "true",
+            memberParser.query("deathDate"),
+            memberParser.query("fatherName")
+        );
+        members[key] = member;
+    }
+
+    for(const auto& member : members) {
+        children[member.second.fatherName].push_back(member.first);
+    }
 }
 
 void FamilyTree::saveToFile(const std::string& filename) {
     std::ofstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "无法打开文件: " << filename << std::endl;
-        return;
+        throw std::runtime_error("无法打开文件");
     }
 
-    for (const auto& pair : members) {
-        Member* member = pair.second;
-        file << member->name << '|'
-             << member->birthDate << '|'
-             << member->isMarried << '|'
-             << member->address << '|'
-             << member->isAlive << '|'
-             << member->deathDate << '|'
-             << (member->father ? member->father->name : "") << '\n';
+    file << "{";
+    file << "\"members\":[";
+    for (auto it = members.begin(); it != members.end(); ++it) {
+        if (it != members.begin()) {
+            file << ",";
+        }
+        file << "\"" << it->first << "\"";
     }
+    file << "],";
 
+    for (auto it = members.begin(); it != members.end(); ++it) {
+        if (it != members.begin()) {
+            file << ",";
+        }
+        file << "\"" << it->first << "\":{";
+        file << "\"name\":\"" << it->second.name << "\",";
+        file << "\"birthDate\":\"" << it->second.birthDate << "\",";
+        file << "\"isMarried\":\"" << (it->second.isMarried ? "true" : "false") << "\",";
+        file << "\"address\":\"" << it->second.address << "\",";
+        file << "\"isAlive\":\"" << (it->second.isAlive ? "true" : "false") << "\",";
+        file << "\"deathDate\":\"" << it->second.deathDate << "\",";
+        file << "\"fatherName\":\"" << it->second.fatherName << "\"";
+        file << "}";
+    }
+    file << "}";
     file.close();
 }
 
@@ -87,7 +100,7 @@ void FamilyTree::determineRelationship(const std::string& name1, const std::stri
     // ...实现确定两人关系的功能...
 }
 
-void FamilyTree::addChild(const std::string& parentName, Member* child) {
+void FamilyTree::addChild(const std::string& parentName, Member child) {
     // ...实现添加孩子的功能...
 }
 

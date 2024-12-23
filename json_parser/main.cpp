@@ -48,6 +48,29 @@ int main()
         assert(parser4.query("esc\\aped") == "\"hello\"");
         std::cout << "address.city: " << parser4.query("address.city") << std::endl;
         std::cout << "esc\\aped: " << parser4.query("esc\\aped") << std::endl;
+
+        // 测试布尔值解析
+        std::string jsonString5 = R"({"isStudent": true, "isEmployed": false})";
+        JsonParser parser5(jsonString5);
+        assert(parser5.query("isStudent") == "true");
+        assert(parser5.query("isEmployed") == "false");
+        std::cout << "isStudent: " << parser5.query("isStudent") << std::endl;
+        std::cout << "isEmployed: " << parser5.query("isEmployed") << std::endl;
+
+        // 测试列表解析
+        std::string jsonString6 = R"({"names": ["Alice", "Bob", "Charlie"]})";
+        JsonParser parser6(jsonString6);
+        std::vector<std::string> names = parser6.queryList("names");
+        assert(names.size() == 3);
+        assert(names[0] == "Alice");
+        assert(names[1] == "Bob");
+        assert(names[2] == "Charlie");
+        std::cout << "names: ";
+        for (const auto& name : names) {
+            std::cout << name << " ";
+        }
+        std::cout << std::endl;
+
         std::cout << "\033[32mAll tests passed\033[0m" << std::endl;
     }
     catch (const std::exception &e)

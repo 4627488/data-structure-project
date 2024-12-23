@@ -1,0 +1,39 @@
+{
+  "members": ["John", "Jane", "Alice", "Bob"],
+  "John": {
+    "name": "John",
+    "birthDate": "1970-01-01",
+    "isMarried": "true",
+    "address": "123 Main St",
+    "isAlive": "true",
+    "deathDate": "",
+    "fatherName": ""
+  },
+  "Jane": {
+    "name": "Jane",
+    "birthDate": "1975-02-02",
+    "isMarried": "true",
+    "address": "123 Main St",
+    "isAlive": "true",
+    "deathDate": "",
+    "fatherName": ""
+  },
+  "Alice": {
+    "name": "Alice",
+    "birthDate": "2000-03-03",
+    "isMarried": "false",
+    "address": "123 Main St",
+    "isAlive": "true",
+    "deathDate": "",
+    "fatherName": "John"
+  },
+  "Bob": {
+    "name": "Bob",
+    "birthDate": "2005-04-04",
+    "isMarried": "false",
+    "address": "123 Main St",
+    "isAlive": "true",
+    "deathDate": "",
+    "fatherName": "John"
+  }
+}

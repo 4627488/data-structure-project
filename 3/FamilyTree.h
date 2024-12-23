@@ -7,7 +7,8 @@
 
 class FamilyTree {
 public:
-    std::map<std::string, Member*> members; // 成员列表
+    std::map<std::string, Member> members; // 成员列表, key 为姓名, value 为成员对象
+    std::map<std::string,std::vector<std::string>> children; // 孩子列表, key 为父亲姓名, value 为孩子姓名列表
 
     FamilyTree();
     ~FamilyTree();
@@ -19,7 +20,7 @@ public:
     Member* findMemberByName(const std::string& name);  // 按姓名查找成员
     void searchByBirthDate(const std::string& date);    // 按出生日期查询成员
     void determineRelationship(const std::string& name1, const std::string& name2); // 确定两人关系
-    void addChild(const std::string& parentName, Member* child); // 添加孩子
+    void addChild(const std::string& parentName, Member child); // 添加孩子
     void deleteMember(const std::string& name);                  // 删除成员
     void modifyMember(const std::string& name);                  // 修改成员信息
 

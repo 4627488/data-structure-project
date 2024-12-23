@@ -12,10 +12,11 @@ public:
     std::string address;         // 地址
     bool isAlive;                // 健在否
     std::string deathDate;       // 死亡日期
-    std::vector<Member*> children; // 孩子
+    std::string fatherName;      // 父亲姓名，如果没有父亲则为空
 
+    Member();
     Member(const std::string& name);
-    Member(const std::string& name, const std::string& birthDate, bool isMarried, const std::string& address, bool isAlive, const std::string& deathDate);
+    Member(const std::string& name, const std::string& birthDate, bool isMarried, const std::string& address, bool isAlive, const std::string& deathDate, const std::string& fatherName);
 
     void Print();
 

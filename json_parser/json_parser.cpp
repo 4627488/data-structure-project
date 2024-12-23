@@ -63,6 +63,13 @@ std::string JsonParser::query(const std::string &key) const
     }
 }
 
+std::vector<std::string> JsonParser::queryList(const std::string &key) const
+{
+    std::string listJson = jsonObject.find(key);
+    std::istringstream stream(listJson);
+    return parseList(stream);
+}
+
 void JsonParser::parse(const std::string &jsonString)
 {
     std::istringstream stream(jsonString);
@@ -95,6 +102,25 @@ void JsonParser::parseObject(std::istringstream &stream)
             {
                 value = parseObjectString(stream);
             }
+            else if (ch == 't' || ch == 'f')
+            {
+                stream.putback(ch);
+                value = parseBoolean(stream);
+            }
+            else if (ch == '[')
+            {
+                std::vector<std::string> list = parseList(stream);
+                value = "[";
+                for (size_t i = 0; i < list.size(); ++i)
+                {
+                    value += "\"" + list[i] + "\"";
+                    if (i < list.size() - 1)
+                    {
+                        value += ",";
+                    }
+                }
+                value += "]";
+            }
             jsonObject.insert(key, value);
         }
         else if (ch == '}')
@@ -104,7 +130,7 @@ void JsonParser::parseObject(std::istringstream &stream)
     }
 }
 
-std::string JsonParser::parseString(std::istringstream &stream)
+std::string JsonParser::parseString(std::istringstream &stream) const
 {
     std::string result;
     char ch;
@@ -150,6 +176,49 @@ std::string JsonParser::parseObjectString(std::istringstream &stream)
     {
         result += ch;
         if (ch == '}')
+        {
+            break;
+        }
+    }
+    return result;
+}
+
+std::string JsonParser::parseBoolean(std::istringstream &stream)
+{
+    std::string result;
+    char ch;
+    while (stream.get(ch))
+    {
+        if (ch == ',' || ch == '}' || ch == ' ' || ch == '\n' || ch == '\t')
+        {
+            stream.putback(ch);
+            break;
+        }
+        result += ch;
+    }
+    if (result == "true" || result == "false")
+    {
+        return result;
+    }
+    else
+    {
+        throw std::runtime_error("Invalid boolean value");
+    }
+}
+
+std::vector<std::string> JsonParser::parseList(std::istringstream &stream) const
+{
+    std::vector<std::string> result;
+    std::string value;
+    char ch;
+    while (stream >> ch)
+    {
+        if (ch == '"')
+        {
+            value = parseString(stream);
+            result.push_back(value);
+        }
+        else if (ch == ']')
         {
             break;
         }

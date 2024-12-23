@@ -3,8 +3,8 @@
 
 int main() {
     FamilyTree familyTree;
-    familyTree.loadFromFile("familyData.txt");
-
+    familyTree.loadFromFile("familyData.json");
+    familyTree.saveToFile("familyData2.json");
     int choice;
     do {
         std::cout << "======= 家谱管理系统 =======" << std::endl;
@@ -70,7 +70,7 @@ int main() {
                 std::cin >> parentName;
                 std::cout << "请输入孩子的姓名：";
                 std::cin >> childName;
-                Member* child = new Member(childName);
+                Member child(childName);
                 familyTree.addChild(parentName, child);
                 break;
             }

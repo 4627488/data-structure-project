@@ -25,13 +25,16 @@ class JsonParser
 public:
     JsonParser(const std::string &jsonString);
     std::string query(const std::string &key) const;
+    std::vector<std::string> queryList(const std::string &key) const;
 
 private:
     HashTable jsonObject;
     void parse(const std::string &jsonString);
     void parseObject(std::istringstream &stream);
-    std::string parseString(std::istringstream &stream);
+    std::string parseString(std::istringstream &stream) const;
     std::string parseObjectString(std::istringstream &stream);
+    std::string parseBoolean(std::istringstream &stream);
+    std::vector<std::string> parseList(std::istringstream &stream) const;
 };
 
 #endif // JSON_PARSER_H

@@ -32,7 +32,7 @@ void minHeapify(MinHeap *minHeap, int idx)
     if (right < minHeap->size && minHeap->array[right]->freq < minHeap->array[smallest]->freq)
         smallest = right;
 
-    if (smallest != idx)
+    if (smallest != idx) // 需要旋转
     {
         swapHuffmanNode(&minHeap->array[smallest], &minHeap->array[idx]);
         minHeapify(minHeap, smallest);
@@ -44,7 +44,7 @@ MinHeap *createMinHeap(unsigned capacity)
     MinHeap *minHeap = (MinHeap *)malloc(sizeof(MinHeap));
     minHeap->size = 0;
     minHeap->capacity = capacity;
-    minHeap->array = (HuffmanNode **)malloc(minHeap->capacity * sizeof(HuffmanNode *));
+    minHeap->array = (HuffmanNode **)malloc(minHeap->capacity * sizeof(HuffmanNode *)); 
     return minHeap;
 }
 
@@ -176,7 +176,7 @@ void saveCodesToFile(char data[], char codes[][256], int size, const char *codeF
     fclose(file);
 }
 
-static int bitBuffer = 0;
+static int bitBuffer = 0; //公共的writeBit 缓冲区，当剩余不足8位时，先不写入文件
 static int bitCount = 0;
 
 void writeBit(FILE *file, int bit)
@@ -205,7 +205,7 @@ void flushBits(FILE *file)
 
 void encodeFile(const char *inputFile, const char *outputFile, const char *codeFile)
 {
-    int freq[257] = {0}; // Increase size to include EOF marker
+    int freq[257] = {0}; // 多一个位置用于存储EOF标记
     calculateFrequencies(inputFile, freq);
 
     char data[257];
@@ -220,7 +220,7 @@ void encodeFile(const char *inputFile, const char *outputFile, const char *codeF
 
     HuffmanNode *root = buildHuffmanTree(data, freq, size);
 
-    char codes[257][256] = {{0}}; // Increase size to include EOF marker
+    char codes[257][256] = {{0}};  // 编码表
     int arr[256], top = 0;
     generateCodes(root, arr, top, codes);
 
@@ -244,7 +244,7 @@ void encodeFile(const char *inputFile, const char *outputFile, const char *codeF
         }
     }
 
-    // Write EOF marker
+    // 写入EOF标记
     char *code = codes[EOF_MARKER];
     for (int i = 0; code[i] != '\0'; i++)
     {
@@ -297,7 +297,7 @@ void decodeFile(const char *inputFile, const char *outputFile, const char *codeF
         exit(EXIT_FAILURE);
     }
 
-    char codes[257][256] = {{0}}; // Increase size to include EOF marker
+    char codes[257][256] = {{0}};
     char data[257];
     int size = 0;
     int ascii;
@@ -339,10 +339,10 @@ void decodeFile(const char *inputFile, const char *outputFile, const char *codeF
             {
                 current = current->right;
             }
-            assert(current != NULL);
+            assert(current != NULL); // 保证编码表正确
             if (!current->left && !current->right)
             {
-                if ((unsigned char)current->data == EOF_MARKER)
+                if ((unsigned char)current->data == EOF_MARKER) // 到达EOF标记
                 {
                     fclose(input);
                     fclose(output);

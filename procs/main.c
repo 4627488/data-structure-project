@@ -1,10 +1,3 @@
-/*
-1、系统进程统计（必做）（链表）
-Author: 黄耘青
-Date: 2024.12.19
-Notice: 本程序读取 /proc 目录下的进程信息，统计进程的内存使用情况，以及进程的运行时间。因此需要在 Linux 环境下运行。
-Test: 本程序在 6.12.4-arch1-1 环境下测试通过。
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

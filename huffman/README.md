@@ -59,6 +59,38 @@ make clean
 
 该命令将删除生成的目标文件和中间文件。
 
+## 数据结构
+
+### HuffmanNode
+
+```c
+typedef struct HuffmanNode {
+    char data;
+    unsigned freq;
+    struct HuffmanNode *left, *right;
+} HuffmanNode;
+```
+
+### MinHeap
+
+```c
+typedef struct MinHeap {
+    unsigned size;
+    unsigned capacity;
+    HuffmanNode **array;
+} MinHeap;
+```
+
+## 算法设计思想
+
+1. 计算每个字符的频率。
+2. 使用这些频率构建一个最小堆。（插入一个EOF节点，频率为1）
+3. 从最小堆中提取两个最小频率的节点，创建一个新节点，其频率为这两个节点频率之和，并将这两个节点作为新节点的子节点。
+4. 将新节点插入最小堆。
+5. 重复步骤3和4，直到堆中只剩下一个节点，这个节点就是Huffman树的根节点。
+6. 通过遍历Huffman树生成每个字符的Huffman编码。
+7. 使用生成的Huffman编码对文件进行编码和解码。
+
 ## 代码示例
 
 ### 编码文件
@@ -75,3 +107,22 @@ encodeFile(inputFile, encodedFile, codeFile);
 // 解码文件
 decodeFile(encodedFile, decodedFile, codeFile);
 ```
+
+## 算法时间复杂度
+
+Huffman编码算法的时间复杂度主要由以下几个部分组成：
+
+1. 计算字符频率：O(n)，其中n是输入字符的数量。
+2. 构建最小堆：O(d log d)，其中d是不同字符的数量。
+3. 构建Huffman树：O(d log d)。
+4. 生成Huffman编码：O(d)。
+5. 编码文件：O(n)。
+6. 解码文件：O(n)。
+
+因此，Huffman编码算法的总体时间复杂度为O(n + d log d)。
+
+## 改进方法
+
+1. 使用更高效的数据结构，如斐波那契堆，可以进一步优化最小堆的构建和操作。
+2. 在实际应用中，可以结合其他压缩算法（如LZW）以提高压缩效率。
+3. 对于特定类型的数据，可以根据其特点设计专门的编码方案，以获得更好的压缩效果。

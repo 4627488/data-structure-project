@@ -1,13 +1,21 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++11
+CXXFLAGS = -std=c++11 -Wall
 TARGET = json_parser
-SRC = main.cpp json_parser.cpp
-HEADERS = json_parser.h
+SRCS = main.cpp json_parser.cpp
+OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(SRC) $(HEADERS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $<
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(OBJS) $(TARGET)
+
+test: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean test

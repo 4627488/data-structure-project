@@ -58,8 +58,15 @@ std::string JsonParser::query(const std::string &key) const
         std::string firstKey = key.substr(0, dotPos);
         std::string remainingKey = key.substr(dotPos + 1);
         std::string nestedJson = jsonObject.find(firstKey);
-        JsonParser nestedParser(nestedJson);
-        return nestedParser.query(remainingKey);
+        if (nestedJson.front() == '{' && nestedJson.back() == '}')
+        {
+            JsonParser nestedParser(nestedJson);
+            return nestedParser.query(remainingKey);
+        }
+        else
+        {
+            throw std::runtime_error("Key not found");
+        }
     }
 }
 

@@ -28,6 +28,7 @@ procs\main.c: 268
 sort\main.cpp: 85
 sort\sorting_algorithms.h: 173
 subway\subway.cpp: 55
+Total lines of code: 2620
 ```
 
 ## 课程设计题目

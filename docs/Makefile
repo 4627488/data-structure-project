@@ -5,7 +5,7 @@ SRC_EXTENSIONS = c cpp h
 DIST_DIR = dist
 
 OUTPUT = report.pdf
-SOURCES = ./report.md $(foreach dir,$(DIRS),../$(dir)/README.md $(DIST_DIR)/source_header.md $(wildcard $(DIST_DIR)/$(dir)/*.md))
+SOURCES = ./begin.md $(foreach dir,$(DIRS),../$(dir)/README.md $(DIST_DIR)/source_header.md $(wildcard $(DIST_DIR)/$(dir)/*.md))
 
 all: $(DIRS) pdf clean
 	@echo "Done!"

@@ -18,12 +18,12 @@
 3. 运行生成的可执行文件 `./bin/family_tree`。
 
 ## 构建步骤
-1. 至少下载`3/`目录和`json_parser/`目录下的所有文件，因为`json_parser`目录下的文件是`Makefile`中的依赖项，具体参考`Makefile`文件。
+1. 至少下载`3/`目录和`json_parser/`目录下的所有文件，因为`json_parser`是依赖项，具体参考`Makefile`文件。
 2. 在项目根目录下执行以下命令：
 ```sh
 make
 ```
-3. 构建成功后，运行以下命令启动程序：
+1. 构建成功后，运行以下命令启动程序：
 ```sh
 ./bin/family_tree
 ```

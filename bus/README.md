@@ -3,39 +3,40 @@
 ## 数据结构
 
 1. **Station**: 表示一个公交站点，包含站点名称、站点ID和该站点所属的线路及在线路中的编号。
-    ```cpp
-    struct Station {
-        string name;
-        int stationId;
-        vector<pair<int, int>> lines; // <lineId, InlineId>
-    };
-    ```
+
+```cpp
+struct Station {
+    string name;
+    int stationId;
+    vector<pair<int, int>> lines; // <lineId, InlineId>
+};
+```
 
 2. **Line**: 表示一条公交线路，包含线路名称、线路ID和该线路经过的站点ID。
-    ```cpp
-    struct Line {
-        string name;
-        int lineId;
-        vector<int> stationIds;
-    };
-    ```
+```cpp
+struct Line {
+    string name;
+    int lineId;
+    vector<int> stationIds;
+};
+```
 
 ## 算法设计思想
 
 1. **读取CSV文件**: 读取CSV文件并解析每一行数据，构建站点和线路的映射关系。
-    ```cpp
-    void readCSV(const string &filename);
-    ```
+```cpp
+void readCSV(const string &filename);
+```
 
 2. **最少转车次数的乘车路线**: 使用Dijkstra算法，计算从起始站点到终点站点的最少转车次数的路线。
-    ```cpp
-    vector<pair<string, string>> findTransferLeastPath(const int startStationId, const int endStationId);
-    ```
+```cpp
+vector<pair<string, string>> findTransferLeastPath(const int startStationId, const int endStationId);
+```
 
 3. **经过站点数量最少的乘车路线**: 使用Dijkstra算法，计算从起始站点到终点站点的经过站点数量最少的路线。
-    ```cpp
-    vector<pair<string, string>> findLeastStationPath(const int startStationId, const int endStationId);
-    ```
+```cpp
+vector<pair<string, string>> findLeastStationPath(const int startStationId, const int endStationId);
+```
 
 ## 测试数据和结果
 

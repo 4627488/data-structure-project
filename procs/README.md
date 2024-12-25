@@ -17,13 +17,13 @@
 ## 使用方法
 1. 克隆或下载本项目到本地。
 2. 使用 `gcc` 编译程序：
-    ```sh
-    gcc -o process_stat main.c
-    ```
+```sh
+gcc -o process_stat main.c
+```
 3. 运行编译后的程序：
-    ```sh
-    ./process_stat
-    ```
+```sh
+./process_stat
+```
 4. 程序将每秒读取一次进程信息，并打印当前活动进程和已结束进程的信息。
 
 ## 注意事项

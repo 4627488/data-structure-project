@@ -15,28 +15,28 @@
 ### 生成迷宫
 
 1. 编译 `generate_maze.c` 文件：
-    ```sh
-    gcc generate_maze.c -o generate_maze
-    ```
+```sh
+gcc generate_maze.c -o generate_maze
+```
 
 2. 运行生成迷宫程序：
-    ```sh
-    ./generate_maze
-    ```
+```sh
+./generate_maze
+```
 
    该程序会生成一个随机迷宫并保存到 `maze.txt` 文件中。
 
 ### 求解迷宫
 
 1. 编译 `main.c` 文件：
-    ```sh
-    gcc main.c -o solve_maze
-    ```
+```sh
+gcc main.c -o solve_maze
+```
 
 2. 运行求解迷宫程序：
-    ```sh
-    ./solve_maze
-    ```
+```sh
+./solve_maze
+```
 
    该程序会读取 `maze.txt` 文件中的迷宫数据，并尝试找到从入口到出口的路径。如果找到路径，会输出 "Path found!"，否则输出 "No path found."。同时会打印出标记过的迷宫。
 

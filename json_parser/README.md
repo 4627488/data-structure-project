@@ -14,14 +14,14 @@
 ## 使用方法
 
 1. 编译项目：
-    ```sh
-    make
-    ```
+```sh
+make
+```
 
 2. 运行项目：
-    ```sh
-    ./json_parser
-    ```
+```sh
+./json_parser
+```
 
 ## 示例
 

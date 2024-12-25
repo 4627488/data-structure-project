@@ -1,14 +1,34 @@
 # 定义源文件和输出文件
-SOURCES = ./report.md ../procs/README.md ../maze/README.md ../family/README.md ../avl_tree/README.md ../huffman/README.md ../subway/README.md ../bus/README.md ../b_tree/README.md ../sort/README.md ../json_parser/README.md
-OUTPUT = ./report.pdf
+DIRS = procs maze family avl_tree huffman subway bus b_tree sort json_parser
 
-# 生成PDF文件的规则
-$(OUTPUT): $(SOURCES)
+SRC_EXTENSIONS = c cpp h
+DIST_DIR = dist
+
+OUTPUT = report.pdf
+SOURCES = ./report.md $(foreach dir,$(DIRS),../$(dir)/README.md $(DIST_DIR)/source_header.md $(wildcard $(DIST_DIR)/$(dir)/*.md))
+
+all: $(DIRS) pdf clean
+	@echo "Done!"
+
+pdf:
 	pandoc --highlight-style=tango -o $(OUTPUT) $(SOURCES) --pdf-engine=xelatex
 
-# 清理生成的PDF文件
 clean:
-	rm -f $(OUTPUT)
+	del $(DIST_DIR)
 
-# 默认目标
-all: $(OUTPUT)
+$(DIRS):
+	mkdir -p $(DIST_DIR);
+	mkdir -p $(DIST_DIR)/$@;
+	echo -e "## 源代码" > $(DIST_DIR)/source_header.md;
+	@for ext in $(SRC_EXTENSIONS); do \
+		for file in ../$@/*.$$ext; do \
+			if [ -f $$file ]; then \
+				filename=$$(basename $$file); \
+				echo -e "$$file\n\`\`\`cpp" > $(DIST_DIR)/$@/$$filename.md; \
+				cat $$file >> $(DIST_DIR)/$@/$$filename.md; \
+				echo -e "\n\`\`\`" >> $(DIST_DIR)/$@/$$filename.md; \
+			fi \
+		done \
+	done
+
+

@@ -8,7 +8,7 @@ header-includes:
   - \pagestyle{fancy}
   - \fancyhead[L]{\leftmark}
   - \fancyhead[R]{《数据结构》课程设计报告}
-  - \fancyfoot[L]{作者：黄耘青}
+  - \fancyfoot[L]{github.com/4627488/data-structure-project}
   - \fancyfoot[C]{\thepage}
   - \fancyfoot[R]{2024年12月}
   - \pretitle{\begin{center}\vspace{\bigskipamount}}
@@ -32,8 +32,10 @@ header-includes:
         完成日期： & 2024年12月 \\[2cm]
     \end{tabular}
     
+    \vfill
+    南京航空航天大学
+    
 \end{titlepage}
-
 \newpage
 
 \tableofcontents 

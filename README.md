@@ -61,6 +61,16 @@ Total lines of code: 2620
 
 [【18】树的应用 (选做)（树）](./json_parser/)
 
+
+## 编译课程设计报告
+
+报告基于markdown编写，使用pandoc生成pdf文件。已经写好了Makefile文件，只需要执行以下命令。
+
+```shell
+cd docs
+make pdf
+```
+
 ## 许可证
 
 [MIT with additional terms](./LICENSE)

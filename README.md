@@ -1,35 +1,6 @@
 # 《数据结构》 课程设计 2024秋
 
-## 当前行数
 
-```shell
-avl_tree\avl_tree.c: 131
-avl_tree\avl_tree.h: 17
-avl_tree\main.c: 63
-bus\main.cpp: 242
-b_tree\b_tree.c: 254
-b_tree\b_tree.h: 18
-b_tree\main.c: 64
-b_tree\prime_gen.c: 30
-family\FamilyTree.cpp: 238
-family\FamilyTree.h: 24
-family\main.cpp: 99
-family\Member.cpp: 53
-family\Member.h: 22
-huffman\huffman.c: 307
-huffman\huffman.h: 24
-huffman\main.c: 12
-json_parser\json_parser.cpp: 221
-json_parser\json_parser.h: 34
-json_parser\main.cpp: 61
-maze\generate_maze.c: 38
-maze\main.c: 87
-procs\main.c: 268
-sort\main.cpp: 85
-sort\sorting_algorithms.h: 173
-subway\subway.cpp: 55
-Total lines of code: 2620
-```
 
 ## 课程设计题目
 

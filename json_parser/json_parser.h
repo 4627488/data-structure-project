@@ -2,32 +2,30 @@
 #define JSON_PARSER_H
 
 #include <iostream>
+#include <list>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <list>
-#include <stdexcept>
-#include <sstream>
 
-class HashTable
-{
-public:
+class HashTable {
+  public:
     HashTable(size_t size = 101);
     void insert(const std::string &key, const std::string &value);
     std::string find(const std::string &key) const;
 
-private:
+  private:
     std::vector<std::list<std::pair<std::string, std::string>>> table;
     size_t hashFunction(const std::string &key) const;
 };
 
-class JsonParser
-{
-public:
+class JsonParser {
+  public:
     JsonParser(const std::string &jsonString);
     std::string query(const std::string &key) const;
     std::vector<std::string> queryList(const std::string &key) const;
 
-private:
+  private:
     HashTable jsonObject;
     void parse(const std::string &jsonString);
     void parseObject(std::istringstream &stream);

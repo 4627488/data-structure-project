@@ -5,16 +5,24 @@ SRC_EXTENSIONS = c cpp h
 DIST_DIR = dist
 
 OUTPUT = report.pdf
+OUTPUT_DOCX = report.docx
 SOURCES = ./begin.md $(foreach dir,$(DIRS),../$(dir)/README.md $(DIST_DIR)/source_header.md $(wildcard $(DIST_DIR)/$(dir)/*.md)) ./end.md
 
-all: $(DIRS) pdf clean
+all: $(DIRS) pdf docx clean
 	@echo "Done!"
 
 pdf:
-	pandoc --highlight-style=tango -o $(OUTPUT) $(SOURCES) --pdf-engine=xelatex
+	pandoc --highlight-style=tango -o $(OUTPUT) $(SOURCES) --pdf-engine=xelatex --wrap=auto
+
+docx:
+	pandoc --highlight-style=tango -o $(OUTPUT_DOCX) $(SOURCES) --wrap=auto
 
 clean:
-	del $(DIST_DIR)
+ifeq ($(OS),Windows_NT)
+	powershell -Command "Remove-Item -Path $(DIST_DIR) -Recurse -Force"
+else
+	rm -rf $(DIST_DIR)
+endif
 
 $(DIRS):
 	mkdir -p $(DIST_DIR);
@@ -24,7 +32,7 @@ $(DIRS):
 		for file in ../$@/*.$$ext; do \
 			if [ -f $$file ]; then \
 				filename=$$(basename $$file); \
-				echo -e "$$file\n\`\`\`cpp" > $(DIST_DIR)/$@/$$filename.md; \
+				echo -e "### $$file\n\`\`\`cpp" > $(DIST_DIR)/$@/$$filename.md; \
 				cat $$file >> $(DIST_DIR)/$@/$$filename.md; \
 				echo -e "\n\`\`\`" >> $(DIST_DIR)/$@/$$filename.md; \
 			fi \

@@ -14,7 +14,7 @@ typedef struct BTree {
     BTreeNode *root;
 } BTree;
 
-BTree* createBTree();
+BTree *createBTree();
 void insert(BTree *tree, int key);
 void delete(BTree *tree, int key);
 int search(BTree *tree, int key);

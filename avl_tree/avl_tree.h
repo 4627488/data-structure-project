@@ -12,7 +12,7 @@ typedef struct AVLTree {
     AVLNode *root;
 } AVLTree;
 
-AVLTree* create_avl_tree();
+AVLTree *create_avl_tree();
 void insert_avl_tree(AVLTree *tree, int key);
 void delete_avl_tree(AVLTree *tree, int key);
 int search_avl_tree(AVLTree *tree, int key);

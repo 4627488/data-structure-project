@@ -23,6 +23,9 @@ class FamilyTree {
     void addChild(const std::string &parentName, Member child);                     // 添加孩子
     void deleteMember(const std::string &name);                                     // 删除成员
     void modifyMember(const std::string &name);                                     // 修改成员信息
+  private:
+    void displayTree(const std::string &name, int level,
+                                 std::vector<bool> isLast); // 递归显示家谱
 };
 
 #endif // FAMILYTREE_H

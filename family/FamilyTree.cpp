@@ -71,28 +71,26 @@ void FamilyTree::saveToFile(const std::string &filename) {
     file.close();
 }
 
+void FamilyTree::displayTree(const std::string &name, int level, std::vector<bool> isLast) {
+    for (int i = 0; i < level; ++i) {
+        if (i == level - 1) {
+            std::cout << (isLast[i] ? "└──" : "├──");
+        } else {
+            std::cout << (isLast[i] ? "     " : "│    ");
+        }
+    }
+    std::cout << name << " (" << members[name].birthDate << "~" << members[name].deathDate << ")"
+              << std::endl;
+    if (children.find(name) != children.end()) {
+        for (size_t i = 0; i < children[name].size(); ++i) {
+            isLast.push_back(i == children[name].size() - 1);
+            displayTree(children[name][i], level + 1, isLast);
+            isLast.pop_back();
+        }
+    }
+}
+
 void FamilyTree::displayFamilyTree() {
-    // 输出ASCII树形结构
-    std::function<void(const std::string &, int, std::vector<bool>)> displayTree =
-        [&](const std::string &name, int level, std::vector<bool> isLast) {
-            for (int i = 0; i < level; ++i) {
-                if (i == level - 1) {
-                    std::cout << (isLast[i] ? "└──" : "├──");
-                } else {
-                    std::cout << (isLast[i] ? "     " : "│    ");
-                }
-            }
-            std::cout << name << " (" << members[name].birthDate << "-" << members[name].deathDate << ")" << std::endl;
-
-            if (children.find(name) != children.end()) {
-                for (size_t i = 0; i < children[name].size(); ++i) {
-                    isLast.push_back(i == children[name].size() - 1);
-                    displayTree(children[name][i], level + 1, isLast);
-                    isLast.pop_back();
-                }
-            }
-        };
-
     if (!rootName.empty()) {
         displayTree(rootName, 0, {});
     } else {

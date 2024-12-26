@@ -24,6 +24,7 @@ void saveMazeToFile(int maze[ROWS][COLS], const char *filename) {
         printf("Failed to open file.\n");
         return;
     }
+    fprintf(file, "%d %d\n", ROWS, COLS);
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
             fprintf(file, "%d ", maze[i][j]);

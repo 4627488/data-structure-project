@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ROWS 20
-#define COLS 20
+int rows;
+int cols;
+
 #define PATH 0
 #define WALL 1
 #define VISITED 2
@@ -41,24 +42,25 @@ Position pop(Stack *s) {
     return invalid;
 }
 
-int isValid(int maze[ROWS][COLS], int x, int y) {
-    return x >= 0 && x < ROWS && y >= 0 && y < COLS && maze[x][y] == PATH;
+int isValid(int **maze, int x, int y) {
+    return x >= 0 && x < rows && y >= 0 && y < cols && maze[x][y] == PATH;
 }
 
-void printMaze(int maze[ROWS][COLS]) {
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
+void printMaze(int **maze) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             printf("%d ", maze[i][j]);
         }
         printf("\n");
     }
 }
 
-void solveMaze(int maze[ROWS][COLS], Position start, Position end) {
+void solveMaze(int **maze, Position start, Position end) {
     Stack stack;
-    initStack(&stack, ROWS * COLS);
+    initStack(&stack, rows * cols);
     push(&stack, start);
 
+    // 定义四个方向：上、下、左、右
     int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
     while (!isStackEmpty(&stack)) {
@@ -70,6 +72,7 @@ void solveMaze(int maze[ROWS][COLS], Position start, Position end) {
 
         maze[current.x][current.y] = VISITED;
 
+        // 尝试向四个方向移动
         for (int i = 0; i < 4; i++) {
             int newX = current.x + directions[i][0];
             int newY = current.y + directions[i][1];
@@ -83,25 +86,36 @@ void solveMaze(int maze[ROWS][COLS], Position start, Position end) {
 }
 
 int main() {
-    int maze[ROWS][COLS];
     FILE *file = fopen("maze.txt", "r");
     if (file == NULL) {
         printf("Failed to open file.\n");
         return 1;
     }
 
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
+    fscanf(file, "%d %d", &rows, &cols);
+
+    int **maze = (int **)malloc(rows * sizeof(int *));
+    for (int i = 0; i < rows; i++) {
+        maze[i] = (int *)malloc(cols * sizeof(int));
+    }
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             fscanf(file, "%d", &maze[i][j]);
         }
     }
     fclose(file);
 
-    Position start = {0, 0};             // 任意入口
-    Position end = {ROWS - 1, COLS - 1}; // 任意出口
+    Position start = {0, 0};             // 设置入口
+    Position end = {rows - 1, cols - 1}; // 设置出口
 
     solveMaze(maze, start, end);
     printMaze(maze);
+
+    for (int i = 0; i < rows; i++) {
+        free(maze[i]);
+    }
+    free(maze);
 
     return 0;
 }

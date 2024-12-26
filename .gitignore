@@ -14,3 +14,5 @@ obj/
 docs/report.pdf
 docs/report.docx
 docs/dist
+
+.exe

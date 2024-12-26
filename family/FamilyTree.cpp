@@ -72,21 +72,29 @@ void FamilyTree::saveToFile(const std::string &filename) {
 }
 
 void FamilyTree::displayFamilyTree() {
-    std::function<void(const std::string &, int)> displayMember = [&](const std::string &name,
-                                                                      int level) {
-        for (int i = 0; i < level; ++i) {
-            std::cout << "  ";
-        }
-        std::cout << "|-- " << name << std::endl;
-        if (children.find(name) != children.end()) {
-            for (const auto &child : children[name]) {
-                displayMember(child, level + 1);
+    // 输出ASCII树形结构
+    std::function<void(const std::string &, int, std::vector<bool>)> displayTree =
+        [&](const std::string &name, int level, std::vector<bool> isLast) {
+            for (int i = 0; i < level; ++i) {
+                if (i == level - 1) {
+                    std::cout << (isLast[i] ? "└──" : "├──");
+                } else {
+                    std::cout << (isLast[i] ? "     " : "│    ");
+                }
             }
-        }
-    };
+            std::cout << name << " (" << members[name].birthDate << "-" << members[name].deathDate << ")" << std::endl;
+
+            if (children.find(name) != children.end()) {
+                for (size_t i = 0; i < children[name].size(); ++i) {
+                    isLast.push_back(i == children[name].size() - 1);
+                    displayTree(children[name][i], level + 1, isLast);
+                    isLast.pop_back();
+                }
+            }
+        };
 
     if (!rootName.empty()) {
-        displayMember(rootName, 0);
+        displayTree(rootName, 0, {});
     } else {
         std::cerr << "家谱根节点未找到。" << std::endl;
     }

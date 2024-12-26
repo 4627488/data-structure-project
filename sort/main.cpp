@@ -47,7 +47,8 @@ void loadSamples(std::vector<std::vector<int>> &samples) {
     }
 }
 
-void measureSortTime(void (*sortFunc)(std::vector<int> &), std::vector<int> sample, const std::string &sortName) {
+void measureSortTime(void (*sortFunc)(std::vector<int> &), std::vector<int> sample,
+		     const std::string &sortName) {
     auto start = std::chrono::high_resolution_clock::now();
     sortFunc(sample);
     auto end = std::chrono::high_resolution_clock::now();
@@ -62,7 +63,8 @@ void countFrequency(const std::vector<int> &sample) {
     }
 
     std::vector<std::pair<int, int>> freqVec(frequency.begin(), frequency.end());
-    std::sort(freqVec.begin(), freqVec.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
+    std::sort(freqVec.begin(), freqVec.end(),
+	      [](const auto &a, const auto &b) { return a.second > b.second; });
 
     std::cout << "数字出现频率：" << std::endl;
     for (const auto &[num, freq] : freqVec) {

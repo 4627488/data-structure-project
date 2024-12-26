@@ -17,8 +17,9 @@ class Member {
     Member();
     Member(const Member &member);
     Member(const std::string &name);
-    Member(const std::string &name, const std::string &birthDate, bool isMarried, const std::string &address,
-	   bool isAlive, const std::string &deathDate, const std::string &fatherName);
+    Member(const std::string &name, const std::string &birthDate, bool isMarried,
+	   const std::string &address, bool isAlive, const std::string &deathDate,
+	   const std::string &fatherName);
 
     Member &operator=(const Member &member);
 

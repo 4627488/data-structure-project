@@ -23,9 +23,11 @@ void minHeapify(MinHeap *minHeap, int idx) {
     int left = 2 * idx + 1;
     int right = 2 * idx + 2;
 
-    if (left < minHeap->size && minHeap->array[left]->freq < minHeap->array[smallest]->freq) smallest = left;
+    if (left < minHeap->size && minHeap->array[left]->freq < minHeap->array[smallest]->freq)
+	smallest = left;
 
-    if (right < minHeap->size && minHeap->array[right]->freq < minHeap->array[smallest]->freq) smallest = right;
+    if (right < minHeap->size && minHeap->array[right]->freq < minHeap->array[smallest]->freq)
+	smallest = right;
 
     if (smallest != idx) // 需要旋转
     {

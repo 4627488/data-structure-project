@@ -69,13 +69,13 @@ void readCSV(const string &filename) {
 	    lines[lineId].lineId = lineId;
 	}
 	lines[lineId].stationIds.push_back(stationId);
-	// cerr << "lineId: " << lineId << " stationId: " << stationId << " InlineId: " << InlineId << endl;
 	assert(lines[lineId].stationIds.size() == InlineId + 1); // 检查站点编号是否连续
     }
 }
 
 // 转车次数最少的乘车路线
-vector<pair<string, string>> findTransferLeastPath(const int startStationId, const int endStationId) {
+vector<pair<string, string>> findTransferLeastPath(const int startStationId,
+						   const int endStationId) {
     vector<pair<string, string>> path; // <stationName, lineName>
     vector<int> dist(MAX_STATION, numeric_limits<int>::max());
     vector<pair<int, int>> prev(MAX_STATION, {-1, -1}); // <stationId, lineId>
@@ -116,7 +116,8 @@ vector<pair<string, string>> findTransferLeastPath(const int startStationId, con
 }
 
 // 经过站点数量最少的乘车路线
-vector<pair<string, string>> findLeastStationPath(const int startStationId, const int endStationId) {
+vector<pair<string, string>> findLeastStationPath(const int startStationId,
+						  const int endStationId) {
     vector<pair<string, string>> path; // <stationName, lineName>
     vector<int> dist(MAX_STATION, numeric_limits<int>::max());
     vector<pair<int, int>> prev(MAX_STATION, {-1, -1}); // <stationId, lineId>

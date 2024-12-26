@@ -72,7 +72,8 @@ void FamilyTree::saveToFile(const std::string &filename) {
 }
 
 void FamilyTree::displayFamilyTree() {
-    std::function<void(const std::string &, int)> displayMember = [&](const std::string &name, int level) {
+    std::function<void(const std::string &, int)> displayMember = [&](const std::string &name,
+								      int level) {
 	for (int i = 0; i < level; ++i) {
 	    std::cout << "  ";
 	}
@@ -92,7 +93,8 @@ void FamilyTree::displayFamilyTree() {
 }
 
 void FamilyTree::displayGeneration(int n) {
-    std::function<void(const std::string &, int)> displayGen = [&](const std::string &name, int level) {
+    std::function<void(const std::string &, int)> displayGen = [&](const std::string &name,
+								   int level) {
 	if (level == n) {
 	    std::cout << "=== 第 " << n << " 代 ===" << std::endl;
 	    members[name].Print();
@@ -128,7 +130,8 @@ void FamilyTree::searchByBirthDate(const std::string &date) {
 
 void FamilyTree::determineRelationship(const std::string &name1, const std::string &name2) {
     std::unordered_map<std::string, int> depth;
-    std::function<void(const std::string &, int)> calculateDepth = [&](const std::string &name, int level) {
+    std::function<void(const std::string &, int)> calculateDepth = [&](const std::string &name,
+								       int level) {
 	depth[name] = level;
 	if (children.find(name) != children.end()) {
 	    for (const auto &child : children[name]) {

@@ -155,7 +155,8 @@ void readProcs() {
 	    atoi(entry->d_name) > 0) // Check if the entry is a directory and the name is a number
 	{
 	    char statPath[512];
-	    snprintf(statPath, sizeof(statPath), "/proc/%s/stat", entry->d_name); // Get the path of the stat file
+	    snprintf(statPath, sizeof(statPath), "/proc/%s/stat",
+		     entry->d_name); // Get the path of the stat file
 
 	    FILE *statFile = fopen(statPath, "r");
 	    if (!statFile) // Check if the file exists
@@ -211,7 +212,8 @@ void printProcs() {
     printf("=== Active Processes ===\n");
     Proc *cur = head;
     while (cur) {
-	printf("PID: %d, Name: %s, Memory: %d kB, Duration: %d seconds\n", cur->pid, cur->name, cur->mem, cur->dur);
+	printf("PID: %d, Name: %s, Memory: %d kB, Duration: %d seconds\n", cur->pid, cur->name,
+	       cur->mem, cur->dur);
 	cur = cur->next;
     }
 }
@@ -220,8 +222,8 @@ void printFinProcs() {
     printf("=== Finnish Processes ===\n");
     Proc *cur = finHead;
     while (cur) {
-	printf("PID: %d, Name: %s, Duration: %d seconds, End Time: %s", cur->pid, cur->name, cur->dur,
-	       ctime(&cur->end));
+	printf("PID: %d, Name: %s, Duration: %d seconds, End Time: %s", cur->pid, cur->name,
+	       cur->dur, ctime(&cur->end));
 	cur = cur->next;
     }
 }

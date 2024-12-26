@@ -2,7 +2,8 @@
 #include <cassert>
 #include <fstream>
 
-void runTest(const std::string &jsonFile, const std::string &queryFile, const std::string &expectedFile) {
+void runTest(const std::string &jsonFile, const std::string &queryFile,
+	     const std::string &expectedFile) {
     std::ifstream jsonInput(jsonFile);
     std::ifstream queryInput(queryFile);
     std::ifstream expectedInput(expectedFile);

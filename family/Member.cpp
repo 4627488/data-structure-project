@@ -7,15 +7,17 @@ Member::Member() : name(""), isMarried(false), isAlive(true) {
 Member::Member(const std::string &name) : name(name), isMarried(false), isAlive(true) {
 }
 
-Member::Member(const std::string &name, const std::string &birthDate, bool isMarried, const std::string &address,
-	       bool isAlive, const std::string &deathDate, const std::string &fatherName)
-    : name(name), birthDate(birthDate), isMarried(isMarried), address(address), isAlive(isAlive), deathDate(deathDate),
-      fatherName(fatherName) {
+Member::Member(const std::string &name, const std::string &birthDate, bool isMarried,
+	       const std::string &address, bool isAlive, const std::string &deathDate,
+	       const std::string &fatherName)
+    : name(name), birthDate(birthDate), isMarried(isMarried), address(address), isAlive(isAlive),
+      deathDate(deathDate), fatherName(fatherName) {
 }
 
 Member::Member(const Member &member)
-    : name(member.name), birthDate(member.birthDate), isMarried(member.isMarried), address(member.address),
-      isAlive(member.isAlive), deathDate(member.deathDate), fatherName(member.fatherName) {
+    : name(member.name), birthDate(member.birthDate), isMarried(member.isMarried),
+      address(member.address), isAlive(member.isAlive), deathDate(member.deathDate),
+      fatherName(member.fatherName) {
 }
 
 Member &Member::operator=(const Member &member) {

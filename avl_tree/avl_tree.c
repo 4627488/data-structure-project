@@ -14,10 +14,11 @@ static AVLNode *create_node(int key) {
     AVLNode *node = (AVLNode *)malloc(sizeof(AVLNode));
     node->key = key;
     node->left = node->right = NULL;
-    node->height = 1;
+    node->height = 1; // 新节点当叶子
     return node;
 }
 
+// 右旋
 static AVLNode *right_rotate(AVLNode *y) {
     AVLNode *x = y->left;
     AVLNode *T2 = x->right;
@@ -31,6 +32,7 @@ static AVLNode *right_rotate(AVLNode *y) {
     return x;
 }
 
+// 左旋
 static AVLNode *left_rotate(AVLNode *x) {
     AVLNode *y = x->right;
     AVLNode *T2 = y->left;
@@ -44,6 +46,7 @@ static AVLNode *left_rotate(AVLNode *x) {
     return y;
 }
 
+// 获取平衡因子
 static int get_balance(AVLNode *node) {
     return node ? height(node->left) - height(node->right) : 0;
 }
@@ -52,11 +55,11 @@ static AVLNode *insert_node(AVLNode *node, int key) {
     if (!node) return create_node(key);
 
     if (key < node->key)
-	node->left = insert_node(node->left, key);
+        node->left = insert_node(node->left, key);
     else if (key > node->key)
-	node->right = insert_node(node->right, key);
+        node->right = insert_node(node->right, key);
     else
-	return node;
+        return node;
 
     node->height = 1 + max(height(node->left), height(node->right));
 
@@ -67,13 +70,13 @@ static AVLNode *insert_node(AVLNode *node, int key) {
     if (balance < -1 && key > node->right->key) return left_rotate(node);
 
     if (balance > 1 && key > node->left->key) {
-	node->left = left_rotate(node->left);
-	return right_rotate(node);
+        node->left = left_rotate(node->left);
+        return right_rotate(node);
     }
 
     if (balance < -1 && key < node->right->key) {
-	node->right = right_rotate(node->right);
-	return left_rotate(node);
+        node->right = right_rotate(node->right);
+        return left_rotate(node);
     }
 
     return node;
@@ -82,7 +85,7 @@ static AVLNode *insert_node(AVLNode *node, int key) {
 static AVLNode *min_value_node(AVLNode *node) {
     AVLNode *current = node;
     while (current->left != NULL)
-	current = current->left;
+        current = current->left;
     return current;
 }
 
@@ -90,25 +93,25 @@ static AVLNode *delete_node(AVLNode *root, int key) {
     if (!root) return root;
 
     if (key < root->key)
-	root->left = delete_node(root->left, key);
+        root->left = delete_node(root->left, key);
     else if (key > root->key)
-	root->right = delete_node(root->right, key);
+        root->right = delete_node(root->right, key);
     else {
-	if ((root->left == NULL) || (root->right == NULL)) {
-	    AVLNode *temp = root->left ? root->left : root->right;
+        if ((root->left == NULL) || (root->right == NULL)) {
+            AVLNode *temp = root->left ? root->left : root->right;
 
-	    if (!temp) {
-		temp = root;
-		root = NULL;
-	    } else
-		*root = *temp;
+            if (!temp) {
+                temp = root;
+                root = NULL;
+            } else
+                *root = *temp;
 
-	    free(temp);
-	} else {
-	    AVLNode *temp = min_value_node(root->right);
-	    root->key = temp->key;
-	    root->right = delete_node(root->right, temp->key);
-	}
+            free(temp);
+        } else {
+            AVLNode *temp = min_value_node(root->right);
+            root->key = temp->key;
+            root->right = delete_node(root->right, temp->key);
+        }
     }
 
     if (!root) return root;
@@ -120,15 +123,15 @@ static AVLNode *delete_node(AVLNode *root, int key) {
     if (balance > 1 && get_balance(root->left) >= 0) return right_rotate(root);
 
     if (balance > 1 && get_balance(root->left) < 0) {
-	root->left = left_rotate(root->left);
-	return right_rotate(root);
+        root->left = left_rotate(root->left);
+        return right_rotate(root);
     }
 
     if (balance < -1 && get_balance(root->right) <= 0) return left_rotate(root);
 
     if (balance < -1 && get_balance(root->right) > 0) {
-	root->right = right_rotate(root->right);
-	return left_rotate(root);
+        root->right = right_rotate(root->right);
+        return left_rotate(root);
     }
 
     return root;

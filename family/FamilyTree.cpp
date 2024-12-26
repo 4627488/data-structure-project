@@ -9,7 +9,7 @@
 void FamilyTree::loadFromFile(const std::string &filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
-	throw std::runtime_error("无法打开文件");
+        throw std::runtime_error("无法打开文件");
     }
 
     std::stringstream buffer;
@@ -20,52 +20,52 @@ void FamilyTree::loadFromFile(const std::string &filename) {
     JsonParser parser(jsonString);
     std::vector<std::string> memberKeys = parser.queryList("members");
     for (const auto &key : memberKeys) {
-	std::string memberJson = parser.query(key);
-	JsonParser memberParser(memberJson);
-	Member member(memberParser.query("name"), memberParser.query("birthDate"),
-		      memberParser.query("isMarried") == "true", memberParser.query("address"),
-		      memberParser.query("isAlive") == "true", memberParser.query("deathDate"),
-		      memberParser.query("fatherName"));
-	if (member.fatherName.empty()) {
-	    rootName = key;
-	}
-	members[key] = member;
+        std::string memberJson = parser.query(key);
+        JsonParser memberParser(memberJson);
+        Member member(memberParser.query("name"), memberParser.query("birthDate"),
+                      memberParser.query("isMarried") == "true", memberParser.query("address"),
+                      memberParser.query("isAlive") == "true", memberParser.query("deathDate"),
+                      memberParser.query("fatherName"));
+        if (member.fatherName.empty()) {
+            rootName = key;
+        }
+        members[key] = member;
     }
 
     for (const auto &member : members) {
-	children[member.second.fatherName].push_back(member.first);
+        children[member.second.fatherName].push_back(member.first);
     }
 }
 
 void FamilyTree::saveToFile(const std::string &filename) {
     std::ofstream file(filename);
     if (!file.is_open()) {
-	throw std::runtime_error("无法打开文件");
+        throw std::runtime_error("无法打开文件");
     }
 
     file << "{";
     file << "\"members\":[";
     for (auto it = members.begin(); it != members.end(); ++it) {
-	if (it != members.begin()) {
-	    file << ",";
-	}
-	file << "\"" << it->first << "\"";
+        if (it != members.begin()) {
+            file << ",";
+        }
+        file << "\"" << it->first << "\"";
     }
     file << "],";
 
     for (auto it = members.begin(); it != members.end(); ++it) {
-	if (it != members.begin()) {
-	    file << ",";
-	}
-	file << "\"" << it->first << "\":{";
-	file << "\"name\":\"" << it->second.name << "\",";
-	file << "\"birthDate\":\"" << it->second.birthDate << "\",";
-	file << "\"isMarried\":\"" << (it->second.isMarried ? "true" : "false") << "\",";
-	file << "\"address\":\"" << it->second.address << "\",";
-	file << "\"isAlive\":\"" << (it->second.isAlive ? "true" : "false") << "\",";
-	file << "\"deathDate\":\"" << it->second.deathDate << "\",";
-	file << "\"fatherName\":\"" << it->second.fatherName << "\"";
-	file << "}";
+        if (it != members.begin()) {
+            file << ",";
+        }
+        file << "\"" << it->first << "\":{";
+        file << "\"name\":\"" << it->second.name << "\",";
+        file << "\"birthDate\":\"" << it->second.birthDate << "\",";
+        file << "\"isMarried\":\"" << (it->second.isMarried ? "true" : "false") << "\",";
+        file << "\"address\":\"" << it->second.address << "\",";
+        file << "\"isAlive\":\"" << (it->second.isAlive ? "true" : "false") << "\",";
+        file << "\"deathDate\":\"" << it->second.deathDate << "\",";
+        file << "\"fatherName\":\"" << it->second.fatherName << "\"";
+        file << "}";
     }
     file << "}";
     file.close();
@@ -73,100 +73,100 @@ void FamilyTree::saveToFile(const std::string &filename) {
 
 void FamilyTree::displayFamilyTree() {
     std::function<void(const std::string &, int)> displayMember = [&](const std::string &name,
-								      int level) {
-	for (int i = 0; i < level; ++i) {
-	    std::cout << "  ";
-	}
-	std::cout << "|-- " << name << std::endl;
-	if (children.find(name) != children.end()) {
-	    for (const auto &child : children[name]) {
-		displayMember(child, level + 1);
-	    }
-	}
+                                                                      int level) {
+        for (int i = 0; i < level; ++i) {
+            std::cout << "  ";
+        }
+        std::cout << "|-- " << name << std::endl;
+        if (children.find(name) != children.end()) {
+            for (const auto &child : children[name]) {
+                displayMember(child, level + 1);
+            }
+        }
     };
 
     if (!rootName.empty()) {
-	displayMember(rootName, 0);
+        displayMember(rootName, 0);
     } else {
-	std::cerr << "家谱根节点未找到。" << std::endl;
+        std::cerr << "家谱根节点未找到。" << std::endl;
     }
 }
 
 void FamilyTree::displayGeneration(int n) {
     std::function<void(const std::string &, int)> displayGen = [&](const std::string &name,
-								   int level) {
-	if (level == n) {
-	    std::cout << "=== 第 " << n << " 代 ===" << std::endl;
-	    members[name].Print();
-	}
-	if (children.find(name) != children.end()) {
-	    for (const auto &child : children[name]) {
-		displayGen(child, level + 1);
-	    }
-	}
+                                                                   int level) {
+        if (level == n) {
+            std::cout << "=== 第 " << n << " 代 ===" << std::endl;
+            members[name].Print();
+        }
+        if (children.find(name) != children.end()) {
+            for (const auto &child : children[name]) {
+                displayGen(child, level + 1);
+            }
+        }
     };
 
     if (!rootName.empty()) {
-	displayGen(rootName, 0);
+        displayGen(rootName, 0);
     } else {
-	std::cerr << "家谱根节点未找到。" << std::endl;
+        std::cerr << "家谱根节点未找到。" << std::endl;
     }
 }
 
 Member &FamilyTree::findMemberByName(const std::string &name) {
     if (members.find(name) == members.end()) {
-	throw std::runtime_error("未找到成员");
+        throw std::runtime_error("未找到成员");
     }
     return members[name];
 }
 
 void FamilyTree::searchByBirthDate(const std::string &date) {
     for (const auto &member : members) {
-	if (member.second.birthDate == date) {
-	    member.second.Print();
-	}
+        if (member.second.birthDate == date) {
+            member.second.Print();
+        }
     }
 }
 
 void FamilyTree::determineRelationship(const std::string &name1, const std::string &name2) {
     std::unordered_map<std::string, int> depth;
     std::function<void(const std::string &, int)> calculateDepth = [&](const std::string &name,
-								       int level) {
-	depth[name] = level;
-	if (children.find(name) != children.end()) {
-	    for (const auto &child : children[name]) {
-		calculateDepth(child, level + 1);
-	    }
-	}
+                                                                       int level) {
+        depth[name] = level;
+        if (children.find(name) != children.end()) {
+            for (const auto &child : children[name]) {
+                calculateDepth(child, level + 1);
+            }
+        }
     };
 
     if (!rootName.empty()) {
-	calculateDepth(rootName, 0);
+        calculateDepth(rootName, 0);
     } else {
-	std::cerr << "家谱根节点未找到。" << std::endl;
-	return;
+        std::cerr << "家谱根节点未找到。" << std::endl;
+        return;
     }
 
     if (depth.find(name1) == depth.end() || depth.find(name2) == depth.end()) {
-	std::cerr << "未找到成员。" << std::endl;
-	return;
+        std::cerr << "未找到成员。" << std::endl;
+        return;
     }
 
     int depth1 = depth[name1];
     int depth2 = depth[name2];
 
     if (depth1 == depth2) {
-	std::cout << name1 << " 和 " << name2 << " 是同一代人。" << std::endl;
+        std::cout << name1 << " 和 " << name2 << " 是同一代人。" << std::endl;
     } else if (depth1 < depth2) {
-	std::cout << name1 << " 是 " << name2 << " 的长辈。" << std::endl;
+        std::cout << name1 << " 是 " << name2 << " 的长辈。" << std::endl;
     } else {
-	std::cout << name2 << " 是 " << name1 << " 的长辈。" << std::endl;
+        std::cout << name2 << " 是 " << name1 << " 的长辈。" << std::endl;
     }
 }
 
 void FamilyTree::addChild(const std::string &parentName, Member child) {
     if (members.find(parentName) == members.end()) {
-	throw std::runtime_error("未找到父母成员");
+        throw std::runtime_error("未找到父母成员");
     }
     child.fatherName = parentName;
     members[child.name] = child;
@@ -175,26 +175,26 @@ void FamilyTree::addChild(const std::string &parentName, Member child) {
 
 void FamilyTree::deleteMember(const std::string &name) {
     if (members.find(name) == members.end()) {
-	throw std::runtime_error("未找到成员");
+        throw std::runtime_error("未找到成员");
     }
 
     // 递归删除成员的孩子
     if (children.find(name) != children.end()) {
-	for (const auto &child : children[name]) {
-	    deleteMember(child);
-	}
-	children.erase(name);
+        for (const auto &child : children[name]) {
+            deleteMember(child);
+        }
+        children.erase(name);
     }
 
     // 从父母的孩子列表中删除该成员
     if (!members[name].fatherName.empty()) {
-	auto &siblings = children[members[name].fatherName];
-	for (auto it = siblings.begin(); it != siblings.end(); ++it) {
-	    if (*it == name) {
-		siblings.erase(it);
-		break;
-	    }
-	}
+        auto &siblings = children[members[name].fatherName];
+        for (auto it = siblings.begin(); it != siblings.end(); ++it) {
+            if (*it == name) {
+                siblings.erase(it);
+                break;
+            }
+        }
     }
 
     // 删除成员
@@ -203,7 +203,7 @@ void FamilyTree::deleteMember(const std::string &name) {
 
 void FamilyTree::modifyMember(const std::string &name) {
     if (members.find(name) == members.end()) {
-	throw std::runtime_error("未找到成员");
+        throw std::runtime_error("未找到成员");
     }
 
     Member &member = members[name];
@@ -213,7 +213,7 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newName;
     std::getline(std::cin >> std::ws, newName);
     if (!newName.empty()) {
-	member.name = newName;
+        member.name = newName;
     }
 
     std::cout << "当前出生日期：" << member.birthDate << std::endl;
@@ -221,7 +221,7 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newBirthDate;
     std::getline(std::cin, newBirthDate);
     if (!newBirthDate.empty()) {
-	member.birthDate = newBirthDate;
+        member.birthDate = newBirthDate;
     }
 
     std::cout << "当前婚否：" << (member.isMarried ? "是" : "否") << std::endl;
@@ -229,7 +229,7 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newIsMarried;
     std::getline(std::cin, newIsMarried);
     if (!newIsMarried.empty()) {
-	member.isMarried = (newIsMarried == "true");
+        member.isMarried = (newIsMarried == "true");
     }
 
     std::cout << "当前地址：" << member.address << std::endl;
@@ -237,7 +237,7 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newAddress;
     std::getline(std::cin, newAddress);
     if (!newAddress.empty()) {
-	member.address = newAddress;
+        member.address = newAddress;
     }
 
     std::cout << "当前健在否：" << (member.isAlive ? "是" : "否") << std::endl;
@@ -245,7 +245,7 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newIsAlive;
     std::getline(std::cin, newIsAlive);
     if (!newIsAlive.empty()) {
-	member.isAlive = (newIsAlive == "true");
+        member.isAlive = (newIsAlive == "true");
     }
 
     std::cout << "当前死亡日期：" << member.deathDate << std::endl;
@@ -253,7 +253,7 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newDeathDate;
     std::getline(std::cin, newDeathDate);
     if (!newDeathDate.empty()) {
-	member.deathDate = newDeathDate;
+        member.deathDate = newDeathDate;
     }
 
     std::cout << "当前父亲姓名：" << member.fatherName << std::endl;
@@ -261,6 +261,6 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::string newFatherName;
     std::getline(std::cin, newFatherName);
     if (!newFatherName.empty()) {
-	member.fatherName = newFatherName;
+        member.fatherName = newFatherName;
     }
 }

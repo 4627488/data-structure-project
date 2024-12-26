@@ -17,38 +17,38 @@ void generateSamples() {
 
     // 正序样本
     for (int i = 0; i < 100000; ++i) {
-	sample[i] = i + 1;
+        sample[i] = i + 1;
     }
     for (int i = 0; i < 10; ++i) {
-	std::ofstream outFile("samples/sample" + std::to_string(i) + ".txt");
-	if (i == 1) {
-	    // 逆序样本
-	    std::reverse(sample.begin(), sample.end());
-	} else if (i > 1) {
-	    // 随机样本
-	    std::generate(sample.begin(), sample.end(), [&]() { return dis(gen); });
-	}
-	for (const auto &num : sample) {
-	    outFile << num << " ";
-	}
-	outFile.close();
+        std::ofstream outFile("samples/sample" + std::to_string(i) + ".txt");
+        if (i == 1) {
+            // 逆序样本
+            std::reverse(sample.begin(), sample.end());
+        } else if (i > 1) {
+            // 随机样本
+            std::generate(sample.begin(), sample.end(), [&]() { return dis(gen); });
+        }
+        for (const auto &num : sample) {
+            outFile << num << " ";
+        }
+        outFile.close();
     }
 }
 
 void loadSamples(std::vector<std::vector<int>> &samples) {
     for (int i = 0; i < 10; ++i) {
-	std::ifstream inFile("samples/sample" + std::to_string(i) + ".txt");
-	std::vector<int> sample(100000);
-	for (int j = 0; j < 100000; ++j) {
-	    inFile >> sample[j];
-	}
-	samples.push_back(sample);
-	inFile.close();
+        std::ifstream inFile("samples/sample" + std::to_string(i) + ".txt");
+        std::vector<int> sample(100000);
+        for (int j = 0; j < 100000; ++j) {
+            inFile >> sample[j];
+        }
+        samples.push_back(sample);
+        inFile.close();
     }
 }
 
 void measureSortTime(void (*sortFunc)(std::vector<int> &), std::vector<int> sample,
-		     const std::string &sortName) {
+                     const std::string &sortName) {
     auto start = std::chrono::high_resolution_clock::now();
     sortFunc(sample);
     auto end = std::chrono::high_resolution_clock::now();
@@ -59,16 +59,16 @@ void measureSortTime(void (*sortFunc)(std::vector<int> &), std::vector<int> samp
 void countFrequency(const std::vector<int> &sample) {
     std::unordered_map<int, int> frequency;
     for (const auto &num : sample) {
-	frequency[num]++;
+        frequency[num]++;
     }
 
     std::vector<std::pair<int, int>> freqVec(frequency.begin(), frequency.end());
     std::sort(freqVec.begin(), freqVec.end(),
-	      [](const auto &a, const auto &b) { return a.second > b.second; });
+              [](const auto &a, const auto &b) { return a.second > b.second; });
 
     std::cout << "数字出现频率：" << std::endl;
     for (const auto &[num, freq] : freqVec) {
-	std::cout << "数字: " << num << " 出现次数: " << freq << std::endl;
+        std::cout << "数字: " << num << " 出现次数: " << freq << std::endl;
     }
 }
 
@@ -78,15 +78,15 @@ int main() {
     loadSamples(samples);
     int sampleCount = 0;
     for (const auto &sample : samples) {
-	std::cout << "====样本" << ++sampleCount << "======" << std::endl;
-	measureSortTime(insertionSort, sample, "直接插入排序");
-	measureSortTime(shellSort, sample, "希尔排序");
-	measureSortTime(bubbleSort, sample, "冒泡排序");
-	measureSortTime(quickSort, sample, "快速排序");
-	measureSortTime(selectionSort, sample, "选择排序");
-	measureSortTime(heapSort, sample, "堆排序");
-	measureSortTime(mergeSort, sample, "归并排序");
-	measureSortTime(radixSort, sample, "基数排序");
+        std::cout << "====样本" << ++sampleCount << "======" << std::endl;
+        measureSortTime(insertionSort, sample, "直接插入排序");
+        measureSortTime(shellSort, sample, "希尔排序");
+        measureSortTime(bubbleSort, sample, "冒泡排序");
+        measureSortTime(quickSort, sample, "快速排序");
+        measureSortTime(selectionSort, sample, "选择排序");
+        measureSortTime(heapSort, sample, "堆排序");
+        measureSortTime(mergeSort, sample, "归并排序");
+        measureSortTime(radixSort, sample, "基数排序");
     }
 
     countFrequency(samples[0]);

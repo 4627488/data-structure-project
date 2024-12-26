@@ -10,25 +10,25 @@
 void generateMaze(int maze[ROWS][COLS]) {
     srand(time(NULL));
     for (int i = 0; i < ROWS; i++) {
-	for (int j = 0; j < COLS; j++) {
-	    maze[i][j] = (rand() % 3 == 0) ? WALL : PATH; // 1/3概率生成墙
-	}
+        for (int j = 0; j < COLS; j++) {
+            maze[i][j] = (rand() % 3 == 0) ? WALL : PATH; // 1/3概率生成墙
+        }
     }
-    maze[0][0] = PATH;		     // 确保入口是路径
+    maze[0][0] = PATH;               // 确保入口是路径
     maze[ROWS - 1][COLS - 1] = PATH; // 确保出口是路径
 }
 
 void saveMazeToFile(int maze[ROWS][COLS], const char *filename) {
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
-	printf("Failed to open file.\n");
-	return;
+        printf("Failed to open file.\n");
+        return;
     }
     for (int i = 0; i < ROWS; i++) {
-	for (int j = 0; j < COLS; j++) {
-	    fprintf(file, "%d ", maze[i][j]);
-	}
-	fprintf(file, "\n");
+        for (int j = 0; j < COLS; j++) {
+            fprintf(file, "%d ", maze[i][j]);
+        }
+        fprintf(file, "\n");
     }
     fclose(file);
 }

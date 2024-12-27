@@ -1,0 +1,7 @@
+{
+    "name": "Alice",
+    "age": "25",
+    "city": "Wonderland",
+    "isStudent": true,
+    "isEmployed": false
+}

@@ -26,7 +26,7 @@ class JsonParser {
     std::vector<std::string> queryList(const std::string &key) const;
 
   private:
-    HashTable jsonObject;
+    HashTable jsonObject; // 用于存储 json 字符串中的键值对，可以理解为邻接表
     void parse(const std::string &jsonString);
     void parseObject(std::istringstream &stream);
     std::string parseString(std::istringstream &stream) const;

@@ -1,0 +1,5 @@
+STRING Alice
+STRING 25
+STRING Wonderland
+STRING true
+STRING false

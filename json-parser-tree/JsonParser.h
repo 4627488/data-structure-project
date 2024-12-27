@@ -17,6 +17,7 @@ class JsonNode : public std::enable_shared_from_this<JsonNode> {
     virtual std::string to_string();
 };
 
+
 class JsonStringNode : public JsonNode {
   public:
     JsonStringNode(const std::string &val);

@@ -18,3 +18,4 @@ docs/dist
 *.exe
 *.ilk
 *.pdb
+*.o

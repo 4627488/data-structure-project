@@ -7,8 +7,12 @@
 #include <unordered_map>
 #include <vector>
 
+extern bool verbose;
+
 std::shared_ptr<JsonNode> JsonNode::getChild(const std::string &key) {
-    std::cout << "JsonNode::getChild(" << key << ")" << std::endl;
+    if (verbose) {
+        std::cout << "JsonNode::getChild(" << key << ")" << std::endl;
+    }
     if (children.find(key) != children.end()) {
         return children[key];
     }
@@ -30,8 +34,10 @@ std::shared_ptr<JsonNode> JsonNode::query(const std::string &queryStr) {
 
     while (std::getline(stream >> std::ws, token, '.')) {
         currentNode = currentNode->getChild(token);
-        std::cerr << "JsonNode::query(" << queryStr << ") -> " << currentNode->to_string()
-                  << std::endl;
+        if (verbose) {
+            std::cerr << "JsonNode::query(" << queryStr << ") -> " << currentNode->to_string()
+                      << std::endl;
+        }
         if (!currentNode) {
             throw std::invalid_argument("Invalid query string");
         }
@@ -97,8 +103,15 @@ std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
         node = std::make_shared<JsonStringNode>(value);
     } else {
         std::string value;
-        stream >> value;
-        node = std::make_shared<JsonStringNode>(value);
+        while (stream >> std::ws >> ch && ch != ',' && ch != '}') {
+            value += ch;
+        }
+        stream.putback(ch);
+        if (value == "true" || value == "false") {
+            node = std::make_shared<JsonBoolNode>(value == "true");
+        } else {
+            throw std::invalid_argument("Invalid JSON");
+        }
     }
     return node;
 }

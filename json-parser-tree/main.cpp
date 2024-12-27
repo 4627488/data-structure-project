@@ -5,6 +5,8 @@
 #include <memory>
 #include <sstream>
 
+bool verbose = false;
+
 void runTest(const std::string &jsonFile, const std::string &queryFile,
              const std::string &expectedFile) {
     std::ifstream jsonInput(jsonFile);
@@ -31,13 +33,19 @@ void runTest(const std::string &jsonFile, const std::string &queryFile,
         std::getline(expectedInput, expected);
 
         try {
-            auto result = root->query(line);
-            if (result->children.empty()) {
-                assert(expected == "OBJECT");
-            } else {
-                assert(expected == "STRING " + std::dynamic_pointer_cast<JsonStringNode>(result)->value);
+            if (verbose) {
+                std::cout << "Query: " << line << std::endl;
             }
-        } catch (const std::runtime_error &) {
+            auto result = root->query(line);
+            // 判断能否转换为JsonStringNode
+            if (auto strNode = std::dynamic_pointer_cast<JsonStringNode>(result)) {
+                assert("STRING " + strNode->value == expected);
+            } else if (auto boolNode = std::dynamic_pointer_cast<JsonBoolNode>(result)) {
+                assert(std::string("BOOL ") + (boolNode->value ? "true" : "false") == expected);
+            } else {
+                assert(expected == "OBJECT");
+            }
+        } catch (const std::invalid_argument &e) {
             assert(expected == "NOTEXIST");
         }
     }
@@ -46,13 +54,14 @@ void runTest(const std::string &jsonFile, const std::string &queryFile,
     expectedInput.close();
 }
 
-int main() {
-    try {
-        runTest("tests/test1.json", "tests/queries1.txt", "tests/expected1.txt");
-        runTest("tests/test2.json", "tests/queries2.txt", "tests/expected2.txt");
-        runTest("tests/test3.json", "tests/queries3.txt", "tests/expected3.txt");
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
+int main(int argc, char *argv[]) {
+    if (argc < 4 || argc > 5) {
+        std::cerr << "Usage: " << argv[0] << " <json-file> <query-file> <expected-file> [-v]" << std::endl;
+        return 1;
     }
+    if (argc == 5 && std::string(argv[4]) == "-v") {
+        verbose = true;
+    }
+    runTest(argv[1], argv[2], argv[3]);
     return 0;
 }

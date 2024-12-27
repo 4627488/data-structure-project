@@ -154,24 +154,12 @@ std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
             std::cout << "JsonParser::parseObject() -> " << "List" << std::endl;
         }
         stream >> std::ws >> ch >> std::ws; // consume '['
-        if (!stream.good()) {
-            std::cerr << "Bad stream1" << std::endl;
-            return node;
-        }
         if (stream.peek() == ']') {
             stream >> ch; // consume ']'
-            std::cerr << "Empty list" << std::endl;
             return node;
         }
-        if (!stream.good()) {
-            std::cerr << "Bad stream2" << std::endl;
-            return node;
-        }
-        std::cerr << "List: stream: " << stream.peek() << std::endl;
         do {
-            std::cerr << "XXX: " << ch << std::endl;
             auto valueNode = parseObject(stream);
-            std::cerr << "Value: " << valueNode->to_string() << std::endl;
             std::dynamic_pointer_cast<JsonListNode>(node)->value.push_back(valueNode);
         } while (stream >> std::ws >> ch && ch != ']');
     } else if (ch == '"') {

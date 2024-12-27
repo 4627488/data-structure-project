@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include "JsonParser.h" 
 
 class FamilyTree {
   public:
@@ -25,7 +26,8 @@ class FamilyTree {
     void modifyMember(const std::string &name);                                     // 修改成员信息
   private:
     void displayTree(const std::string &name, int level,
-                                 std::vector<bool> isLast); // 递归显示家谱
+                     std::vector<bool> isLast);                          // 递归显示家谱
+    std::string loadFromJsonNode(const std::shared_ptr<JsonNode> &root); // 从 JsonNode 加载数据
 };
 
 #endif // FAMILYTREE_H

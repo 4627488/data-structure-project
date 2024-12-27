@@ -1,10 +1,34 @@
 #include "FamilyTree.h"
-#include "json_parser.h"
+#include "JsonParser.h"
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <unordered_map>
+
+bool verbose = false;
+
+std::string FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) {
+    std::string name = std::dynamic_pointer_cast<JsonStringNode>(root->getChild("name"))->value;
+    Member member = {
+        name,
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))->value,
+        std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))->value,
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
+        std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value,
+        "xxx"
+        };
+    std::shared_ptr<JsonListNode> childrenNode = std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
+    if (childrenNode) {
+        for (const auto &child : childrenNode->value) {
+            children[name].push_back(loadFromJsonNode(child));
+        }
+    }
+    members[name] = member;
+    return name;
+}
 
 void FamilyTree::loadFromFile(const std::string &filename) {
     std::ifstream file(filename);
@@ -17,24 +41,10 @@ void FamilyTree::loadFromFile(const std::string &filename) {
     std::string jsonString = buffer.str();
     file.close();
 
-    JsonParser parser(jsonString);
-    std::vector<std::string> memberKeys = parser.queryList("members");
-    for (const auto &key : memberKeys) {
-        std::string memberJson = parser.query(key);
-        JsonParser memberParser(memberJson);
-        Member member(memberParser.query("name"), memberParser.query("birthDate"),
-                      memberParser.query("isMarried") == "true", memberParser.query("address"),
-                      memberParser.query("isAlive") == "true", memberParser.query("deathDate"),
-                      memberParser.query("fatherName"));
-        if (member.fatherName.empty()) {
-            rootName = key;
-        }
-        members[key] = member;
-    }
-
-    for (const auto &member : members) {
-        children[member.second.fatherName].push_back(member.first);
-    }
+    JsonParser parser;
+    auto family = parser.parse(jsonString);
+    std::cout << family->to_json() << std::endl;
+    rootName = loadFromJsonNode(family);
 }
 
 void FamilyTree::saveToFile(const std::string &filename) {

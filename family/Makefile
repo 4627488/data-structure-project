@@ -1,13 +1,13 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -I$(JSON_PARSER_DIR)
+CXXFLAGS = -std=c++17 -Wall -I$(JSON_PARSER_DIR)
 LDFLAGS = 
 
 SRC_DIR = .
 OBJ_DIR = ./obj
 BIN_DIR = ./bin
-JSON_PARSER_DIR = ../json_parser
+JSON_PARSER_DIR = ../json-parser-tree
 
-SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(JSON_PARSER_DIR)/json_parser.cpp)
+SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(JSON_PARSER_DIR)/JsonParser.cpp)
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))
 TARGET = $(BIN_DIR)/family_tree
 

@@ -1,14 +1,14 @@
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <time.h>
-#include <dirent.h>
 #include <sys/sysinfo.h>
+#include <time.h>
+#include <unistd.h>
 
 // 定义进程结构体
 typedef struct Process {
-    char name[256];
+    char name[512];
     int memory;
     time_t start_time;
     int updated; // 更新标记
@@ -17,7 +17,7 @@ typedef struct Process {
 
 // 定义已结束进程结构体
 typedef struct EndedProcess {
-    char name[256];
+    char name[512];
     int duration;
     time_t end_time;
     struct EndedProcess *prev;
@@ -111,68 +111,59 @@ void update_active_processes() {
             char *endptr;
             long pid = strtol(entry->d_name, &endptr, 10);
             if (*endptr == '\0') { // 确保目录名是一个数字，即进程ID
-                char path[256];
+                char path[512];
                 snprintf(path, sizeof(path), "/proc/%ld/stat", pid);
                 FILE *stat_file = fopen(path, "r");
                 if (stat_file) {
-                    char name[256];
-                    long start_time;
-                    fscanf(stat_file, "%*d %s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %*d %*u %*u %*u %*u %*u %*u %ld", name, &start_time);
+                    char name[512];           // 第2个字段
+                    unsigned long start_time; // 第22个字段
+                    unsigned long rss;        // 第24个字段
+                    fscanf(stat_file,
+                           "%*d %s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d"
+                           "%*d %*d %*d %lu %*d %lu %*u %*u %*u %*u %*u %*d",
+                           name, &start_time, &rss);
                     fclose(stat_file);
 
                     // 将 start_time 转换为时间戳
                     start_time = boot_time + (start_time / sysconf(_SC_CLK_TCK));
+                    // rss是实际占用内存，以页为单位存放，一般是4K每页，所有要乘以4
+                    long memory = rss * 4;
 
-                    // 获取内存使用量
-                    snprintf(path, sizeof(path), "/proc/%ld/status", pid);
-                    FILE *status_file = fopen(path, "r");
-                    if (status_file) {
-                        char line[256];
-                        int memory = 0;
-                        while (fgets(line, sizeof(line), status_file)) {
-                            if (strncmp(line, "VmRSS:", 6) == 0) {
-                                sscanf(line + 6, "%d", &memory);
-                                break;
-                            }
+                    if (memory == 0) {
+                        continue;
+                    }
+
+                    // 检查进程是否已经在活动列表中
+                    Process *current = active_head;
+                    int found = 0;
+                    while (current != NULL) {
+                        if (strcmp(current->name, name) == 0) {
+                            found = 1;
+                            current->updated = 1; // 标记为已更新
+                            break;
                         }
-                        fclose(status_file);
+                        current = current->next;
+                    }
 
-                        if (memory <= 0) {
-                            continue;
-                        }
-
-                        // 检查进程是否已经在活动列表中
-                        Process *current = active_head;
-                        int found = 0;
+                    if (!found) {
+                        add_active_process(name, memory, start_time);
+                        // 检查进程是否已经在已结束列表中
+                        EndedProcess *current = ended_head;
                         while (current != NULL) {
                             if (strcmp(current->name, name) == 0) {
-                                found = 1;
-                                current->updated = 1; // 标记为已更新
+                                // 从已结束列表中移除
+                                if (current->prev == NULL) {
+                                    ended_head = current->next;
+                                } else {
+                                    current->prev->next = current->next;
+                                }
+                                if (current->next != NULL) {
+                                    current->next->prev = current->prev;
+                                }
+                                free(current);
                                 break;
                             }
                             current = current->next;
-                        }
-
-                        if (!found) {
-                            add_active_process(name, memory, start_time);
-                            //检查进程是否已经在已结束列表中
-                            EndedProcess *current = ended_head;
-                            while (current != NULL) {
-                                if (strcmp(current->name, name) == 0) {
-                                    // 从已结束列表中移除
-                                    if (current->prev == NULL) {
-                                        ended_head = current->next;
-                                    } else {
-                                        current->prev->next = current->next;
-                                    }
-                                    if (current->next != NULL) {
-                                        current->next->prev = current->prev;
-                                    }
-                                    free(current);
-                                    break;
-                                }
-                                current = current->next;
-                            }
                         }
                     }
                 }
@@ -218,7 +209,8 @@ void print_active_processes() {
     printf("当前活动进程:\n");
     Process *current = active_head;
     while (current != NULL) {
-        printf("进程名: %s, 持续时间: %ld, 内存使用: %d\n", current->name, time(NULL) - current->start_time, current->memory);
+        printf("进程名: %s, 持续时间: %lds, 内存使用: %dKB\n", current->name,
+               time(NULL) - current->start_time, current->memory);
         current = current->next;
     }
 }
@@ -228,7 +220,8 @@ void print_ended_processes() {
     printf("已结束进程:\n");
     EndedProcess *current = ended_head;
     while (current != NULL) {
-        printf("进程名: %s, 持续时间: %d, 结束时间: %s", current->name, current->duration, ctime(&current->end_time));
+        printf("进程名: %s, 持续时间: %d, 结束时间: %s", current->name, current->duration,
+               ctime(&current->end_time));
         current = current->next;
     }
 }
@@ -237,9 +230,10 @@ int main() {
     while (1) {
         update_active_processes();
         update_ended_processes();
+
         print_active_processes();
         print_ended_processes();
-        sleep(1);
+        
     }
     return 0;
 }

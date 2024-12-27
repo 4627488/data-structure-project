@@ -70,6 +70,6 @@ make
 示例查询：
 
 ```cpp
-auto result = root->query("address.zip");
+auto result = root->query("address.city");
 std::cout << result->to_string() << std::endl;
 ```

@@ -56,7 +56,8 @@ void runTest(const std::string &jsonFile, const std::string &queryFile,
 
 int main(int argc, char *argv[]) {
     if (argc < 4 || argc > 5) {
-        std::cerr << "Usage: " << argv[0] << " <json-file> <query-file> <expected-file> [-v]" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <json-file> <query-file> <expected-file> [-v]"
+                  << std::endl;
         return 1;
     }
     if (argc == 5 && std::string(argv[4]) == "-v") {

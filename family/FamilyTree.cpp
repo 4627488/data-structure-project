@@ -23,7 +23,9 @@ std::string FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) 
     std::shared_ptr<JsonListNode> childrenNode = std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
     if (childrenNode) {
         for (const auto &child : childrenNode->value) {
-            children[name].push_back(loadFromJsonNode(child));
+            std::string childName = loadFromJsonNode(child);
+            children[name].push_back(childName);
+            members[childName].fatherName = name;
         }
     }
     members[name] = member;

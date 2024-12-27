@@ -27,6 +27,11 @@ void runTest(const std::string &jsonFile, const std::string &queryFile,
 
     JsonParser parser;
     auto root = parser.parse(jsonString);
+    if(verbose) {
+        std::cout << "OK" << std::endl;
+        std::cout << "Parsed JSON: " << root->to_string() << std::endl;
+        std::cout << "JSON: " << root->to_json() << std::endl;
+    }
 
     while (std::getline(queryInput, line)) {
         std::string expected;

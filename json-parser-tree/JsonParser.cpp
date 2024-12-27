@@ -51,11 +51,28 @@ std::shared_ptr<JsonNode> JsonNode::operator[](const std::string &key) {
 
 std::string JsonNode::to_string() {
     std::string str;
+    if (verbose) {
+        std::cout << "JsonNode::to_string() -> " << children.size() << std::endl;
+    }
     for (const auto &child : children) {
         str += child.first + ": " + child.second->to_string() + ", ";
     }
+    if (verbose) {
+        std::cout << "JsonNode::to_string() -> " << str << std::endl;
+    }
+    if (str.empty()) return "Object{}";
     str.pop_back(), str.pop_back();
     return "Object{" + str + "}";
+}
+
+std::string JsonNode::to_json() {
+    std::string str;
+    for (const auto &child : children) {
+        str += "\"" + child.first + "\": " + child.second->to_json() + ", ";
+    }
+    if (str.empty()) return "{}";
+    str.pop_back(), str.pop_back();
+    return "{" + str + "}";
 }
 
 JsonStringNode::JsonStringNode(const std::string &val) : value(val) {}
@@ -64,15 +81,35 @@ std::string JsonStringNode::to_string() {
     return "String(" + value + ")";
 }
 
+std::string JsonStringNode::to_json() {
+    return "\"" + value + "\"";
+}
+
+JsonListNode::JsonListNode() {
+    value = {};
+}
 JsonListNode::JsonListNode(const std::vector<std::shared_ptr<JsonNode>> &val) : value(val) {}
 
 std::string JsonListNode::to_string() {
     std::string str;
+    if (verbose) std::cout << "JsonListNode::to_string() -> " << value.size() << std::endl;
     for (const auto &val : value) {
         str += val->to_string() + ", ";
     }
+    if (verbose) std::cout << "JsonListNode::to_string() -> " << str << std::endl;
+    if (str.empty()) return "List[]";
     str.pop_back(), str.pop_back();
     return "List[" + str + "]";
+}
+
+std::string JsonListNode::to_json() {
+    std::string str;
+    for (const auto &val : value) {
+        str += val->to_json() + ", ";
+    }
+    if (str.empty()) return "[]";
+    str.pop_back(), str.pop_back();
+    return "[" + str + "]";
 }
 
 JsonBoolNode::JsonBoolNode(bool val) : value(val) {}
@@ -81,31 +118,71 @@ std::string JsonBoolNode::to_string() {
     return "Bool(" + std::string(value ? "true" : "false") + ")";
 }
 
+std::string JsonBoolNode::to_json() {
+    return value ? "true" : "false";
+}
+
 std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
     std::shared_ptr<JsonNode> node;
+    if (verbose) {
+        // std::cout << "JsonParser::parseObject() -> " << stream.str() << std::endl;
+    }
     char ch;
     stream >> std::ws;
     ch = stream.peek();
     if (ch == '{') {
         node = std::make_shared<JsonNode>();
+        if (verbose) {
+            std::cout << "JsonParser::parseObject() -> " << "Object" << std::endl;
+        }
         while (stream >> std::ws >> ch && ch != '}') {
-            stream >> std::ws >> ch, assert(ch == '"');
+            stream >> std::ws >> ch;
+            if (ch == '}') {
+                break;
+            }
             auto key = parseString(stream);
-            stream >> std::ws >> ch, assert(ch == ':');
+            stream >> std::ws >> ch;
+            if (ch != ':') {
+                throw std::invalid_argument("Unexpected ':'");
+            }
             auto valueNode = parseObject(stream);
             node->children[key] = valueNode;
         }
     } else if (ch == '[') {
         node = std::make_shared<JsonListNode>();
-        while (stream >> std::ws >> ch && ch != ']') {
-            auto valueNode = parseObject(stream);
-            std::dynamic_pointer_cast<JsonListNode>(node)->value.push_back(valueNode);
+        if (verbose) {
+            std::cout << "JsonParser::parseObject() -> " << "List" << std::endl;
         }
+        stream >> std::ws >> ch >> std::ws; // consume '['
+        if (!stream.good()) {
+            std::cerr << "Bad stream1" << std::endl;
+            return node;
+        }
+        if (stream.peek() == ']') {
+            stream >> ch; // consume ']'
+            std::cerr << "Empty list" << std::endl;
+            return node;
+        }
+        if (!stream.good()) {
+            std::cerr << "Bad stream2" << std::endl;
+            return node;
+        }
+        std::cerr << "List: stream: " << stream.peek() << std::endl;
+        do {
+            std::cerr << "XXX: " << ch << std::endl;
+            auto valueNode = parseObject(stream);
+            std::cerr << "Value: " << valueNode->to_string() << std::endl;
+            std::dynamic_pointer_cast<JsonListNode>(node)->value.push_back(valueNode);
+        } while (stream >> std::ws >> ch && ch != ']');
     } else if (ch == '"') {
         stream >> ch;
         auto value = parseString(stream);
         node = std::make_shared<JsonStringNode>(value);
     } else {
+        if (verbose) {
+            std::cerr << "===> " << ch << std::endl;
+            std::cerr << stream.str() << std::endl;
+        }
         std::string value;
         while (stream >> std::ws >> ch && ch != ',' && ch != '}') {
             value += ch;
@@ -114,6 +191,9 @@ std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
         if (value == "true" || value == "false") {
             node = std::make_shared<JsonBoolNode>(value == "true");
         } else {
+            if (verbose) {
+                std::cerr << "Invalid JSON: " << value << " " << ch << std::endl;
+            }
             throw std::invalid_argument("Invalid JSON");
         }
     }

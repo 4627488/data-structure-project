@@ -1,249 +1,245 @@
-#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
 #include <unistd.h>
+#include <time.h>
+#include <dirent.h>
+#include <sys/sysinfo.h>
 
-typedef struct Proc // Process struct, Linked List
-{
+// 定义进程结构体
+typedef struct Process {
     char name[256];
-    int mem;
-    int pid;
-    int dur;
-    time_t end;
-    struct Proc *next;
-    struct Proc *prev;
-} Proc;
+    int memory;
+    time_t start_time;
+    int updated; // 更新标记
+    struct Process *next;
+} Process;
 
-Proc *head = NULL;    // Head of the linked list
-Proc *finHead = NULL; // Head of the fin processes linked list
+// 定义已结束进程结构体
+typedef struct EndedProcess {
+    char name[256];
+    int duration;
+    time_t end_time;
+    struct EndedProcess *prev;
+    struct EndedProcess *next;
+} EndedProcess;
 
-time_t getCurrentTime() {
-    return time(NULL);
-}
+// 定义链表头
+Process *active_head = NULL;
+EndedProcess *ended_head = NULL;
 
-void insertProc(char *name, int pid, int mem) {
-    Proc *newProc = (Proc *)malloc(sizeof(Proc));
-    strcpy(newProc->name, name);
-    newProc->pid = pid;
-    newProc->mem = mem;
-    newProc->dur = 0;
-    newProc->end = 0;
-    newProc->next = NULL;
-    newProc->prev = NULL;
+// 添加活动进程
+void add_active_process(char *name, int memory, time_t start_time) {
+    Process *new_process = (Process *)malloc(sizeof(Process));
+    strcpy(new_process->name, name);
+    new_process->memory = memory;
+    new_process->start_time = start_time;
+    new_process->next = NULL;
+    new_process->updated = 1; // 新增的进程标记为已更新
 
-    if (!head || head->mem < mem) {
-        newProc->next = head;
-        head = newProc;
+    // 按内存使用量排序插入
+    if (active_head == NULL || active_head->memory < memory) {
+        new_process->next = active_head;
+        active_head = new_process;
     } else {
-        Proc *cur = head;
-        while (cur->next && cur->next->mem >= mem) {
-            cur = cur->next;
+        Process *current = active_head;
+        while (current->next != NULL && current->next->memory >= memory) {
+            current = current->next;
         }
-        newProc->next = cur->next;
-        cur->next = newProc;
+        new_process->next = current->next;
+        current->next = new_process;
     }
 }
 
-void insertFinProc(Proc *proc) {
-    proc->next = NULL;
-    proc->prev = NULL;
+// 添加已结束进程
+void add_ended_process(char *name, int duration, time_t end_time) {
+    EndedProcess *new_process = (EndedProcess *)malloc(sizeof(EndedProcess));
+    strcpy(new_process->name, name);
+    new_process->duration = duration;
+    new_process->end_time = end_time;
+    new_process->prev = NULL;
+    new_process->next = NULL;
 
-    if (!finHead || finHead->dur > proc->dur) {
-        proc->next = finHead;
-        if (finHead) {
-            finHead->prev = proc;
+    // 按持续时间排序插入
+    if (ended_head == NULL || ended_head->duration > duration) {
+        new_process->next = ended_head;
+        if (ended_head != NULL) {
+            ended_head->prev = new_process;
         }
-        finHead = proc;
+        ended_head = new_process;
     } else {
-        Proc *cur = finHead;
-        while (cur->next && cur->next->dur <= proc->dur) {
-            cur = cur->next;
+        EndedProcess *current = ended_head;
+        while (current->next != NULL && current->next->duration <= duration) {
+            current = current->next;
         }
-        proc->next = cur->next;
-        if (cur->next) {
-            cur->next->prev = proc;
+        new_process->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = new_process;
         }
-        cur->next = proc;
-        proc->prev = cur;
+        current->next = new_process;
+        new_process->prev = current;
     }
 }
 
-void clearProcs() {
-    Proc *cur = head;
-    while (cur) {
-        Proc *temp = cur;
-        cur = cur->next;
-        free(temp);
-    }
-    head = NULL;
-}
-
-Proc *findProc(int pid) {
-    Proc *cur = head;
-    while (cur) {
-        if (cur->pid == pid) {
-            return cur;
-        }
-        cur = cur->next;
-    }
-    return NULL;
-}
-
-Proc *findFinProc(int pid) {
-    Proc *cur = finHead;
-    while (cur) {
-        if (cur->pid == pid) {
-            return cur;
-        }
-        cur = cur->next;
-    }
-    return NULL;
-}
-
-void moveToActiveProc(Proc *proc) {
-    if (proc->prev) {
-        proc->prev->next = proc->next;
-    }
-    if (proc->next) {
-        proc->next->prev = proc->prev;
-    }
-    if (proc == finHead) {
-        finHead = proc->next;
+// 更新活动进程列表
+void update_active_processes() {
+    // 将所有进程标记为未更新
+    Process *current = active_head;
+    while (current != NULL) {
+        current->updated = 0;
+        current = current->next;
     }
 
-    proc->next = NULL;
-    proc->prev = NULL;
-    insertProc(proc->name, proc->pid, proc->mem);
-}
-
-void updateOrInsertProc(char *name, int pid, int mem) {
-    Proc *existingProc = findProc(pid);
-    if (existingProc) {
-        existingProc->mem = mem;
-        existingProc->dur = -existingProc->dur;
-    } else {
-        Proc *finishedProc = findFinProc(pid);
-        if (finishedProc) {
-            moveToActiveProc(finishedProc);
-        } else {
-            insertProc(name, pid, mem);
-        }
-    }
-}
-
-void readProcs() {
-    Proc *cur = head;
-
-    while (cur) {
-        cur->dur = -cur->dur;
-        cur = cur->next;
-    }
-
-    DIR *procDir = opendir("/proc");
-    if (!procDir) {
-        perror("opendir");
+    DIR *proc_dir = opendir("/proc");
+    if (proc_dir == NULL) {
+        perror("无法打开 /proc 目录");
         return;
     }
 
+    // 获取系统开机时间
+    struct sysinfo info;
+    if (sysinfo(&info) != 0) {
+        perror("无法获取系统信息");
+        closedir(proc_dir);
+        return;
+    }
+    time_t boot_time = time(NULL) - info.uptime;
+
     struct dirent *entry;
-    while ((entry = readdir(procDir)) != NULL) {
-        if (entry->d_type == DT_DIR &&
-            atoi(entry->d_name) > 0) // Check if the entry is a directory and the name is a number
-        {
-            char statPath[512];
-            snprintf(statPath, sizeof(statPath), "/proc/%s/stat",
-                     entry->d_name); // Get the path of the stat file
+    while ((entry = readdir(proc_dir)) != NULL) {
+        if (entry->d_type == DT_DIR) {
+            char *endptr;
+            long pid = strtol(entry->d_name, &endptr, 10);
+            if (*endptr == '\0') { // 确保目录名是一个数字，即进程ID
+                char path[256];
+                snprintf(path, sizeof(path), "/proc/%ld/stat", pid);
+                FILE *stat_file = fopen(path, "r");
+                if (stat_file) {
+                    char name[256];
+                    long start_time;
+                    fscanf(stat_file, "%*d %s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %*d %*u %*u %*u %*u %*u %*u %ld", name, &start_time);
+                    fclose(stat_file);
 
-            FILE *statFile = fopen(statPath, "r");
-            if (!statFile) // Check if the file exists
-                continue;
+                    // 将 start_time 转换为时间戳
+                    start_time = boot_time + (start_time / sysconf(_SC_CLK_TCK));
 
-            char name[256];
-            int pid, mem = 0;
+                    // 获取内存使用量
+                    snprintf(path, sizeof(path), "/proc/%ld/status", pid);
+                    FILE *status_file = fopen(path, "r");
+                    if (status_file) {
+                        char line[256];
+                        int memory = 0;
+                        while (fgets(line, sizeof(line), status_file)) {
+                            if (strncmp(line, "VmRSS:", 6) == 0) {
+                                sscanf(line + 6, "%d", &memory);
+                                break;
+                            }
+                        }
+                        fclose(status_file);
 
-            fscanf(statFile, "%d %s", &pid, name); // Read the pid and name from the stat file
-            fclose(statFile);
+                        if (memory <= 0) {
+                            continue;
+                        }
 
-            name[strlen(name) - 1] = '\0';
-            memmove(name, name + 1, strlen(name));
+                        // 检查进程是否已经在活动列表中
+                        Process *current = active_head;
+                        int found = 0;
+                        while (current != NULL) {
+                            if (strcmp(current->name, name) == 0) {
+                                found = 1;
+                                current->updated = 1; // 标记为已更新
+                                break;
+                            }
+                            current = current->next;
+                        }
 
-            char statmPath[512];
-            snprintf(statmPath, sizeof(statmPath), "/proc/%s/statm", entry->d_name);
-
-            FILE *statmFile = fopen(statmPath, "r"); //
-            if (statmFile) {
-                fscanf(statmFile, "%d", &mem); // Read the memory usage from the statm file
-                fclose(statmFile);
+                        if (!found) {
+                            add_active_process(name, memory, start_time);
+                            //检查进程是否已经在已结束列表中
+                            EndedProcess *current = ended_head;
+                            while (current != NULL) {
+                                if (strcmp(current->name, name) == 0) {
+                                    // 从已结束列表中移除
+                                    if (current->prev == NULL) {
+                                        ended_head = current->next;
+                                    } else {
+                                        current->prev->next = current->next;
+                                    }
+                                    if (current->next != NULL) {
+                                        current->next->prev = current->prev;
+                                    }
+                                    free(current);
+                                    break;
+                                }
+                                current = current->next;
+                            }
+                        }
+                    }
+                }
             }
-
-            mem *= 4;
-
-            updateOrInsertProc(name, pid, mem);
         }
     }
-    closedir(procDir);
+    closedir(proc_dir);
+}
 
-    Proc *prev = NULL;
-    cur = head;
-    while (cur) {
-        if (cur->dur < 0) {
-            cur->end = getCurrentTime();
-            if (prev) {
-                prev->next = cur->next;
+// 更新已结束进程列表
+void update_ended_processes() {
+    Process *current = active_head;
+    Process *prev = NULL;
+
+    while (current != NULL) {
+        if (current->updated == 0) { // 未更新的进程视为已结束
+            time_t end_time = time(NULL);
+            int duration = end_time - current->start_time;
+
+            // 从活动链表中移除
+            if (prev == NULL) {
+                active_head = current->next;
             } else {
-                head = cur->next;
+                prev->next = current->next;
             }
-            Proc *temp = cur;
-            cur = prev ? prev->next : head;
-            temp->dur = -temp->dur;
-            insertFinProc(temp);
+
+            // 添加到已结束链表中
+            add_ended_process(current->name, duration, end_time);
+
+            // 释放内存
+            Process *temp = current;
+            current = current->next;
+            free(temp);
         } else {
-            prev = cur;
-            cur = cur->next;
+            prev = current;
+            current = current->next;
         }
     }
 }
 
-void printProcs() {
-    printf("=== Active Processes ===\n");
-    Proc *cur = head;
-    while (cur) {
-        printf("PID: %d, Name: %s, Memory: %d kB, Duration: %d seconds\n", cur->pid, cur->name,
-               cur->mem, cur->dur);
-        cur = cur->next;
+// 打印活动进程信息
+void print_active_processes() {
+    printf("当前活动进程:\n");
+    Process *current = active_head;
+    while (current != NULL) {
+        printf("进程名: %s, 持续时间: %ld, 内存使用: %d\n", current->name, time(NULL) - current->start_time, current->memory);
+        current = current->next;
     }
 }
 
-void printFinProcs() {
-    printf("=== Finnish Processes ===\n");
-    Proc *cur = finHead;
-    while (cur) {
-        printf("PID: %d, Name: %s, Duration: %d seconds, End Time: %s", cur->pid, cur->name,
-               cur->dur, ctime(&cur->end));
-        cur = cur->next;
-    }
-}
-
-void updateDurations() {
-    Proc *cur = head;
-    while (cur) {
-        cur->dur++;
-        cur = cur->next;
+// 打印已结束进程信息
+void print_ended_processes() {
+    printf("已结束进程:\n");
+    EndedProcess *current = ended_head;
+    while (current != NULL) {
+        printf("进程名: %s, 持续时间: %d, 结束时间: %s", current->name, current->duration, ctime(&current->end_time));
+        current = current->next;
     }
 }
 
 int main() {
     while (1) {
-        readProcs();
-        printProcs();
-        printFinProcs();
-        updateDurations();
+        update_active_processes();
+        update_ended_processes();
+        print_active_processes();
+        print_ended_processes();
         sleep(1);
     }
-
     return 0;
 }

@@ -220,7 +220,7 @@ void print_ended_processes() {
     printf("已结束进程:\n");
     EndedProcess *current = ended_head;
     while (current != NULL) {
-        printf("进程名: %s, 持续时间: %d, 结束时间: %s", current->name, current->duration,
+        printf("进程名: %s, 持续时间: %ds, 结束时间: %s", current->name, current->duration,
                ctime(&current->end_time));
         current = current->next;
     }
@@ -230,10 +230,8 @@ int main() {
     while (1) {
         update_active_processes();
         update_ended_processes();
-
         print_active_processes();
         print_ended_processes();
-        
     }
     return 0;
 }

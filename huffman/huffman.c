@@ -148,8 +148,6 @@ void saveCodesToFile(char data[], char codes[][256], int size, const char *codeF
         fprintf(file, "%d %s\n", (unsigned char)data[i], codes[(unsigned char)data[i]]);
     }
 
-    fprintf(file, "%d %s\n", EOF_MARKER, codes[EOF_MARKER]); // Save EOF marker
-
     fclose(file);
 }
 

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-class HashTable {
+class HashTable { // 实则是一种 map 的实现
   public:
     HashTable(size_t size = 101);
     void insert(const std::string &key, const std::string &value);

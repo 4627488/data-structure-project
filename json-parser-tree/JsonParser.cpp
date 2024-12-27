@@ -45,6 +45,10 @@ std::shared_ptr<JsonNode> JsonNode::query(const std::string &queryStr) {
     return currentNode;
 }
 
+std::shared_ptr<JsonNode> JsonNode::operator[](const std::string &key) {
+    return getChild(key);
+}
+
 std::string JsonNode::to_string() {
     std::string str;
     for (const auto &child : children) {

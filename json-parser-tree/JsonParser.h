@@ -14,6 +14,7 @@ class JsonNode : public std::enable_shared_from_this<JsonNode> {
     std::shared_ptr<JsonNode> getChild(const std::string &key);
     std::vector<std::pair<std::string, std::shared_ptr<JsonNode>>> getChildren();
     std::shared_ptr<JsonNode> query(const std::string &queryStr);
+    std::shared_ptr<JsonNode> operator[](const std::string &key);
     virtual std::string to_string();
 };
 

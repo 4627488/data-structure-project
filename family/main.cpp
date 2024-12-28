@@ -14,17 +14,19 @@ int main() {
 
     int choice;
     do {
-        std::cout << "======= 家谱管理系统 =======" << std::endl;
-        std::cout << "1. 显示家谱" << std::endl;
-        std::cout << "2. 显示第 n 代所有人信息" << std::endl;
-        std::cout << "3. 按姓名查询成员信息" << std::endl;
-        std::cout << "4. 按出生日期查询成员名单" << std::endl;
-        std::cout << "5. 确定两人关系" << std::endl;
-        std::cout << "6. 添加成员孩子" << std::endl;
-        std::cout << "7. 删除成员" << std::endl;
-        std::cout << "8. 修改成员信息" << std::endl;
-        std::cout << "9. 保存并退出" << std::endl;
-        std::cout << "请选择功能编号：";
+        // ├ └ │ ─ ┌ ┐ └ ┘
+        std::cout << "┌───────家谱管理系统──────┐" << std::endl;
+        std::cout << "│1. 显示家谱              │" << std::endl;
+        std::cout << "│2. 显示第 n 代所有人信息 │" << std::endl;
+        std::cout << "│3. 按姓名查询成员信息    │" << std::endl;
+        std::cout << "│4. 按出生日期查询成员名单│" << std::endl;
+        std::cout << "│5. 确定两人关系          │" << std::endl;
+        std::cout << "│6. 添加成员孩子          │" << std::endl;
+        std::cout << "│7. 删除成员              │" << std::endl;
+        std::cout << "│8. 修改成员信息          │" << std::endl;
+        std::cout << "│9. 保存并退出            │" << std::endl;
+        std::cout << "└─────────────────────────┘" << std::endl;
+        std::cout << "请选择功能编号 (1-9): ";
         std::cin >> choice;
 
         try {
@@ -34,7 +36,7 @@ int main() {
                 break;
             case 2: {
                 int generation;
-                std::cout << "请输入代数：";
+                std::cout << "请输入代数(0 为根节点)：";
                 std::cin >> generation;
                 familyTree.displayGeneration(generation);
                 break;
@@ -89,7 +91,7 @@ int main() {
             }
             case 9:
                 familyTree.saveToFile(FAMILY_DATA_FILE);
-                std::cout << "数据已保存，程序退出。" << std::endl;
+                std::cout << "数据已保存到 " << FAMILY_DATA_FILE << std::endl;
                 break;
             default:
                 std::cout << "无效的选择，请重新输入。" << std::endl;
@@ -97,6 +99,17 @@ int main() {
             }
         } catch (const std::exception &e) {
             std::cerr << "操作时发生错误: " << e.what() << std::endl;
+        }
+        if (choice != 9) {
+            std::cout << "按 Enter 键继续...";
+            std::cin.ignore();
+            std::cin.get();
+// 清屏
+#ifdef _WIN32
+            system("cls"); // Windows
+#else
+            system("clear"); // Linux
+#endif
         }
     } while (choice != 9);
 

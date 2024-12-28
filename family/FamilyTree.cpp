@@ -17,7 +17,7 @@ std::string FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) 
                      std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
                      std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
                      std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value,
-                     "xxx"};
+                     ""};
     std::shared_ptr<JsonListNode> childrenNode =
         std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
     if (childrenNode) {
@@ -103,10 +103,10 @@ void FamilyTree::displayFamilyTree() {
 }
 
 void FamilyTree::displayGeneration(int n) {
+    std::cout << "=== 第 " << n << " 代 ===" << std::endl;
     std::function<void(const std::string &, int)> displayGen = [&](const std::string &name,
                                                                    int level) {
         if (level == n) {
-            std::cout << "=== 第 " << n << " 代 ===" << std::endl;
             members[name].Print();
         }
         if (children.find(name) != children.end()) {
@@ -138,39 +138,34 @@ void FamilyTree::searchByBirthDate(const std::string &date) {
     }
 }
 
+// 确定两人关系：直系亲属、旁系亲属、非亲属
 void FamilyTree::determineRelationship(const std::string &name1, const std::string &name2) {
-    std::unordered_map<std::string, int> depth;
-    std::function<void(const std::string &, int)> calculateDepth = [&](const std::string &name,
-                                                                       int level) {
-        depth[name] = level;
-        if (children.find(name) != children.end()) {
-            for (const auto &child : children[name]) {
-                calculateDepth(child, level + 1);
+    if (members.find(name1) == members.end() || members.find(name2) == members.end()) {
+        throw std::runtime_error("未找到成员");
+    }
+
+    std::function<bool(const std::string &, const std::string &)> isAncestor =
+        [&](const std::string &ancestor, const std::string &descendant) {
+            if (ancestor == descendant) {
+                return true;
             }
-        }
-    };
+            if (children.find(ancestor) == children.end()) {
+                return false;
+            }
+            for (const auto &child : children[ancestor]) {
+                if (isAncestor(child, descendant)) {
+                    return true;
+                }
+            }
+            return false;
+        };
 
-    if (!rootName.empty()) {
-        calculateDepth(rootName, 0);
+    if (isAncestor(name1, name2)) {
+        std::cout << name1 << " 是 " << name2 << " 的祖先" << std::endl;
+    } else if (isAncestor(name2, name1)) {
+        std::cout << name1 << " 是 " << name2 << " 的后代" << std::endl;
     } else {
-        std::cerr << "家谱根节点未找到。" << std::endl;
-        return;
-    }
-
-    if (depth.find(name1) == depth.end() || depth.find(name2) == depth.end()) {
-        std::cerr << "未找到成员。" << std::endl;
-        return;
-    }
-
-    int depth1 = depth[name1];
-    int depth2 = depth[name2];
-
-    if (depth1 == depth2) {
-        std::cout << name1 << " 和 " << name2 << " 是同一代人。" << std::endl;
-    } else if (depth1 < depth2) {
-        std::cout << name1 << " 是 " << name2 << " 的长辈。" << std::endl;
-    } else {
-        std::cout << name2 << " 是 " << name1 << " 的长辈。" << std::endl;
+        std::cout << name1 << " 和 " << name2 << " 无直系亲属关系" << std::endl;
     }
 }
 
@@ -217,60 +212,83 @@ void FamilyTree::modifyMember(const std::string &name) {
     }
 
     Member &member = members[name];
-    std::cout << "修改成员信息：" << std::endl;
-    std::cout << "当前姓名：" << member.name << std::endl;
-    std::cout << "请输入新姓名（按 Enter 保持不变）：";
+    std::cout << "修改成员信息（按回车保留原值）" << std::endl;
+    std::cin.ignore();
+    std::cout << "修改姓名(" + member.name + ")：";
     std::string newName;
-    std::getline(std::cin >> std::ws, newName);
+    std::getline(std::cin, newName);
     if (!newName.empty()) {
         member.name = newName;
     }
 
-    std::cout << "当前出生日期：" << member.birthDate << std::endl;
-    std::cout << "请输入新出生日期（按 Enter 保持不变）：";
+    std::cout << "修改出生日期(" + member.birthDate + ")：";
     std::string newBirthDate;
     std::getline(std::cin, newBirthDate);
     if (!newBirthDate.empty()) {
         member.birthDate = newBirthDate;
     }
 
-    std::cout << "当前婚否：" << (member.isMarried ? "是" : "否") << std::endl;
-    std::cout << "请输入新婚否（true/false，按 Enter 保持不变）：";
-    std::string newIsMarried;
-    std::getline(std::cin, newIsMarried);
-    if (!newIsMarried.empty()) {
-        member.isMarried = (newIsMarried == "true");
+    std::cout << "修改是否已婚(";
+    if (member.isMarried) {
+        std::cout << "Y/n)：";
+    } else {
+        std::cout << "y/N)：";
+    }
+    std::string isMarried;
+    std::getline(std::cin, isMarried);
+    if (!isMarried.empty()) {
+        member.isMarried = isMarried == "Y" || isMarried == "y";
     }
 
-    std::cout << "当前地址：" << member.address << std::endl;
-    std::cout << "请输入新地址（按 Enter 保持不变）：";
+    std::cout << "修改地址(" + member.address + ")：";
     std::string newAddress;
     std::getline(std::cin, newAddress);
     if (!newAddress.empty()) {
         member.address = newAddress;
     }
 
-    std::cout << "当前健在否：" << (member.isAlive ? "是" : "否") << std::endl;
-    std::cout << "请输入新健在否（true/false，按 Enter 保持不变）：";
-    std::string newIsAlive;
-    std::getline(std::cin, newIsAlive);
-    if (!newIsAlive.empty()) {
-        member.isAlive = (newIsAlive == "true");
+    std::cout << "修改是否在世(";
+    if (member.isAlive) {
+        std::cout << "Y/n)：";
+    } else {
+        std::cout << "y/N)：";
+    }
+    std::string isAlive;
+    std::getline(std::cin, isAlive);
+    if (!isAlive.empty()) {
+        member.isAlive = isAlive == "Y" || isAlive == "y";
     }
 
-    std::cout << "当前死亡日期：" << member.deathDate << std::endl;
-    std::cout << "请输入新死亡日期（按 Enter 保持不变）：";
+    std::cout << "修改死亡日期(" + member.deathDate + ")：";
     std::string newDeathDate;
     std::getline(std::cin, newDeathDate);
     if (!newDeathDate.empty()) {
         member.deathDate = newDeathDate;
     }
 
-    std::cout << "当前父亲姓名：" << member.fatherName << std::endl;
-    std::cout << "请输入新父亲姓名（按 Enter 保持不变）：";
+    std::cout << "修改父亲姓名(" + member.fatherName + ")：";
     std::string newFatherName;
     std::getline(std::cin, newFatherName);
+    auto oldFatherName = member.fatherName;
     if (!newFatherName.empty()) {
         member.fatherName = newFatherName;
+    }
+
+    // 更新父母的孩子列表
+    if (!member.fatherName.empty()) {
+        auto &siblings = children[member.fatherName];
+        for (auto it = siblings.begin(); it != siblings.end(); ++it) {
+            if (*it == name) {
+                *it = newName;
+                break;
+            }
+        }
+        auto &oldSiblings = children[oldFatherName];
+        for (auto it = oldSiblings.begin(); it != oldSiblings.end(); ++it) {
+            if (*it == name) {
+                oldSiblings.erase(it);
+                break;
+            }
+        }
     }
 }

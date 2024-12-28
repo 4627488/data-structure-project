@@ -7,6 +7,30 @@
 
 bool verbose = false;
 
+std::string testJson(const std::string &json, const std::string &queries) {
+    std::istringstream jsonStream(json);
+    std::istringstream queryStream(queries);
+    JsonParser parser;
+    auto root = parser.parse(jsonStream.str());
+    std::string result;
+    std::string query;
+    while (std::getline(queryStream, query)) {
+        try {
+            auto node = root->query(query);
+            if (auto strNode = std::dynamic_pointer_cast<JsonStringNode>(node)) {
+                result += "STRING " + strNode->value + "\n";
+            } else if (auto boolNode = std::dynamic_pointer_cast<JsonBoolNode>(node)) {
+                result += "BOOL " + std::string(boolNode->value ? "true" : "false") + "\n";
+            } else {
+                result += "OBJECT\n";
+            }
+        } catch (const std::invalid_argument &e) {
+            result += "NOTEXIST\n";
+        }
+    }
+    return result;
+}
+
 void runTest(const std::string &jsonFile, const std::string &queryFile,
              const std::string &expectedFile) {
     std::ifstream jsonInput(jsonFile);
@@ -25,41 +49,51 @@ void runTest(const std::string &jsonFile, const std::string &queryFile,
     }
     jsonInput.close();
 
-    JsonParser parser;
-    auto root = parser.parse(jsonString);
-    if(verbose) {
-        std::cout << "OK" << std::endl;
-        std::cout << "Parsed JSON: " << root->to_string() << std::endl;
-        std::cout << "JSON: " << root->to_json() << std::endl;
-    }
-
+    std::string query;
     while (std::getline(queryInput, line)) {
-        std::string expected;
-        std::getline(expectedInput, expected);
-
-        try {
-            if (verbose) {
-                std::cout << "Query: " << line << std::endl;
-            }
-            auto result = root->query(line);
-            // 判断能否转换为JsonStringNode
-            if (auto strNode = std::dynamic_pointer_cast<JsonStringNode>(result)) {
-                assert("STRING " + strNode->value == expected);
-            } else if (auto boolNode = std::dynamic_pointer_cast<JsonBoolNode>(result)) {
-                assert(std::string("BOOL ") + (boolNode->value ? "true" : "false") == expected);
-            } else {
-                assert(expected == "OBJECT");
-            }
-        } catch (const std::invalid_argument &e) {
-            assert(expected == "NOTEXIST");
-        }
+        query += line + "\n";
     }
-
     queryInput.close();
+
+    std::string expected;
+    while (std::getline(expectedInput, line)) {
+        expected += line + "\n";
+    }
     expectedInput.close();
+
+    auto result = testJson(jsonString, query);
+    if (result == expected) {
+        std::cout << "Test passed" << std::endl;
+    } else {
+        std::cerr << "Test failed" << std::endl;
+        std::cerr << "Expected:" << std::endl;
+        std::cerr << expected;
+        std::cerr << "Got:" << std::endl;
+        std::cerr << result;
+        throw std::runtime_error("Test failed");
+    }
 }
 
 int main(int argc, char *argv[]) {
+    if (argc == 1) {
+        int n, m;
+        std::cin >> n >> m;
+        std::string jsonFile, queryFile, expectedFile;
+        for (int i = 0; i < n; i++) {
+            std::string s;
+            std::cin >> std::ws;
+            std::getline(std::cin, s);
+            jsonFile += s;
+        }
+        for (int i = 0; i < m; i++) {
+            std::string s;
+            std::cin >> std::ws;
+            std::getline(std::cin, s);
+            queryFile += s + "\n";
+        }
+        std::cout << testJson(jsonFile, queryFile);
+        return 0;
+    }
     if (argc < 4 || argc > 5) {
         std::cerr << "Usage: " << argv[0] << " <json-file> <query-file> <expected-file> [-v]"
                   << std::endl;

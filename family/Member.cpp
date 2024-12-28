@@ -1,33 +1,26 @@
 #include "Member.h"
 #include <iostream>
 
-Member::Member() : name(""), isMarried(false), isAlive(true) {
-}
+Member::Member() : name(""), birthDate(), deathDate(), isAlive(true), isMarried(false), address(""), fatherName("") {}
 
-Member::Member(const std::string &name) : name(name), isMarried(false), isAlive(true) {
-}
+Member::Member(const std::string &name)
+    : name(name), birthDate(), deathDate(), isAlive(true), isMarried(false), address(""), fatherName("") {}
 
 Member::Member(const std::string &name, const std::string &birthDate, bool isMarried,
-               const std::string &address, bool isAlive, const std::string &deathDate,
-               const std::string &fatherName)
-    : name(name), birthDate(birthDate), isMarried(isMarried), address(address), isAlive(isAlive),
-      deathDate(deathDate), fatherName(fatherName) {
-}
+               const std::string &address, bool isAlive, const std::string &deathDate)
+    : name(name), birthDate(Date(birthDate)), deathDate(Date(deathDate)), isAlive(isAlive), isMarried(isMarried), address(address), fatherName("") {}
 
 Member::Member(const Member &member)
-    : name(member.name), birthDate(member.birthDate), isMarried(member.isMarried),
-      address(member.address), isAlive(member.isAlive), deathDate(member.deathDate),
-      fatherName(member.fatherName) {
-}
+    : name(member.name), birthDate(member.birthDate), deathDate(member.deathDate), isAlive(member.isAlive), isMarried(member.isMarried), address(member.address), fatherName(member.fatherName) {}
 
 Member &Member::operator=(const Member &member) {
     if (this != &member) {
         name = member.name;
         birthDate = member.birthDate;
+        deathDate = member.deathDate;
+        isAlive = member.isAlive;
         isMarried = member.isMarried;
         address = member.address;
-        isAlive = member.isAlive;
-        deathDate = member.deathDate;
         fatherName = member.fatherName;
     }
     return *this;

@@ -11,13 +11,12 @@ bool verbose = false;
 
 std::string FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) {
     std::string name = std::dynamic_pointer_cast<JsonStringNode>(root->getChild("name"))->value;
-    Member member = {name,
-                     std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))->value,
-                     std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))->value,
-                     std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
-                     std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
-                     std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value,
-                     ""};
+    Member member =
+        Member(name, std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))->value,
+               std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))->value,
+               std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
+               std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
+               std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value);
     std::shared_ptr<JsonListNode> childrenNode =
         std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
     if (childrenNode) {
@@ -56,11 +55,13 @@ std::shared_ptr<JsonNode> FamilyTree::buildJsonNode(const std::string &name) {
         childrenNode->value.push_back(childNode);
     }
     node->children["name"] = std::make_shared<JsonStringNode>(name);
-    node->children["birthDate"] = std::make_shared<JsonStringNode>(members[name].birthDate);
+    node->children["birthDate"] =
+        std::make_shared<JsonStringNode>(members[name].birthDate.toString());
     node->children["isMarried"] = std::make_shared<JsonBoolNode>(members[name].isMarried);
     node->children["address"] = std::make_shared<JsonStringNode>(members[name].address);
     node->children["isAlive"] = std::make_shared<JsonBoolNode>(members[name].isAlive);
-    node->children["deathDate"] = std::make_shared<JsonStringNode>(members[name].deathDate);
+    node->children["deathDate"] =
+        std::make_shared<JsonStringNode>(members[name].deathDate.toString());
     node->children["children"] = childrenNode;
     return node;
 }
@@ -68,7 +69,7 @@ std::shared_ptr<JsonNode> FamilyTree::buildJsonNode(const std::string &name) {
 void FamilyTree::saveToFile(const std::string &filename) {
     std::ofstream file(filename);
     if (!file.is_open()) {
-        throw std::runtime_error("无法打开文件");
+        throw std::runtime_error("无法打开文件 " + filename);
     }
     auto family = buildJsonNode(rootName);
     file << family->to_json();
@@ -130,18 +131,24 @@ Member &FamilyTree::findMemberByName(const std::string &name) {
     return members[name];
 }
 
-void FamilyTree::searchByBirthDate(const std::string &date) {
+void FamilyTree::searchByBirthDate(const std::string &dateStr) {
+    Date date(dateStr);
+    bool found = false;
     for (const auto &member : members) {
         if (member.second.birthDate == date) {
+            found = true;
             member.second.Print();
         }
+    }
+    if (!found) {
+        std::cout << "未找到出生日期为 " << date << " 的成员" << std::endl;
     }
 }
 
 // 确定两人关系：直系亲属、旁系亲属、非亲属
 void FamilyTree::determineRelationship(const std::string &name1, const std::string &name2) {
     if (members.find(name1) == members.end() || members.find(name2) == members.end()) {
-        throw std::runtime_error("未找到成员");
+        throw std::runtime_error("未找到成员" + name1 + "或" + name2);
     }
 
     std::function<bool(const std::string &, const std::string &)> isAncestor =
@@ -221,11 +228,11 @@ void FamilyTree::modifyMember(const std::string &name) {
         member.name = newName;
     }
 
-    std::cout << "修改出生日期(" + member.birthDate + ")：";
-    std::string newBirthDate;
-    std::getline(std::cin, newBirthDate);
-    if (!newBirthDate.empty()) {
-        member.birthDate = newBirthDate;
+    std::cout << "修改出生日期(" << member.birthDate << ")：";
+    std::string newBirthDateStr;
+    std::getline(std::cin, newBirthDateStr);
+    if (!newBirthDateStr.empty()) {
+        member.birthDate = Date(newBirthDateStr);
     }
 
     std::cout << "修改是否已婚(";
@@ -258,12 +265,13 @@ void FamilyTree::modifyMember(const std::string &name) {
     if (!isAlive.empty()) {
         member.isAlive = isAlive == "Y" || isAlive == "y";
     }
-
-    std::cout << "修改死亡日期(" + member.deathDate + ")：";
-    std::string newDeathDate;
-    std::getline(std::cin, newDeathDate);
-    if (!newDeathDate.empty()) {
-        member.deathDate = newDeathDate;
+    if (!member.isAlive) {
+        std::cout << "修改死亡日期(" << member.deathDate << ")：";
+        std::string newDeathDateStr;
+        std::getline(std::cin, newDeathDateStr);
+        if (!newDeathDateStr.empty()) {
+            member.deathDate = Date(newDeathDateStr);
+        }
     }
 
     std::cout << "修改父亲姓名(" + member.fatherName + ")：";
@@ -271,6 +279,9 @@ void FamilyTree::modifyMember(const std::string &name) {
     std::getline(std::cin, newFatherName);
     auto oldFatherName = member.fatherName;
     if (!newFatherName.empty()) {
+        if (members.find(newFatherName) == members.end()) {
+            throw std::runtime_error("未找到这个父亲成员");
+        }
         member.fatherName = newFatherName;
     }
 

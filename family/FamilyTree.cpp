@@ -11,16 +11,15 @@ bool verbose = false;
 
 std::string FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) {
     std::string name = std::dynamic_pointer_cast<JsonStringNode>(root->getChild("name"))->value;
-    Member member = {
-        name,
-        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))->value,
-        std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))->value,
-        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
-        std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
-        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value,
-        "xxx"
-        };
-    std::shared_ptr<JsonListNode> childrenNode = std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
+    Member member = {name,
+                     std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))->value,
+                     std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))->value,
+                     std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
+                     std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
+                     std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value,
+                     "xxx"};
+    std::shared_ptr<JsonListNode> childrenNode =
+        std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
     if (childrenNode) {
         for (const auto &child : childrenNode->value) {
             std::string childName = loadFromJsonNode(child);
@@ -49,37 +48,30 @@ void FamilyTree::loadFromFile(const std::string &filename) {
     rootName = loadFromJsonNode(family);
 }
 
+std::shared_ptr<JsonNode> FamilyTree::buildJsonNode(const std::string &name) {
+    auto node = std::make_shared<JsonNode>();
+    auto childrenNode = std::make_shared<JsonListNode>();
+    for (const auto &member : children[name]) {
+        auto childNode = buildJsonNode(member);
+        childrenNode->value.push_back(childNode);
+    }
+    node->children["name"] = std::make_shared<JsonStringNode>(name);
+    node->children["birthDate"] = std::make_shared<JsonStringNode>(members[name].birthDate);
+    node->children["isMarried"] = std::make_shared<JsonBoolNode>(members[name].isMarried);
+    node->children["address"] = std::make_shared<JsonStringNode>(members[name].address);
+    node->children["isAlive"] = std::make_shared<JsonBoolNode>(members[name].isAlive);
+    node->children["deathDate"] = std::make_shared<JsonStringNode>(members[name].deathDate);
+    node->children["children"] = childrenNode;
+    return node;
+}
+
 void FamilyTree::saveToFile(const std::string &filename) {
     std::ofstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("无法打开文件");
     }
-
-    file << "{";
-    file << "\"members\":[";
-    for (auto it = members.begin(); it != members.end(); ++it) {
-        if (it != members.begin()) {
-            file << ",";
-        }
-        file << "\"" << it->first << "\"";
-    }
-    file << "],";
-
-    for (auto it = members.begin(); it != members.end(); ++it) {
-        if (it != members.begin()) {
-            file << ",";
-        }
-        file << "\"" << it->first << "\":{";
-        file << "\"name\":\"" << it->second.name << "\",";
-        file << "\"birthDate\":\"" << it->second.birthDate << "\",";
-        file << "\"isMarried\":\"" << (it->second.isMarried ? "true" : "false") << "\",";
-        file << "\"address\":\"" << it->second.address << "\",";
-        file << "\"isAlive\":\"" << (it->second.isAlive ? "true" : "false") << "\",";
-        file << "\"deathDate\":\"" << it->second.deathDate << "\",";
-        file << "\"fatherName\":\"" << it->second.fatherName << "\"";
-        file << "}";
-    }
-    file << "}";
+    auto family = buildJsonNode(rootName);
+    file << family->to_json();
     file.close();
 }
 

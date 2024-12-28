@@ -1,11 +1,11 @@
 #ifndef FAMILYTREE_H
 #define FAMILYTREE_H
 
+#include "JsonParser.h"
 #include "Member.h"
 #include <map>
 #include <memory>
 #include <string>
-#include "JsonParser.h" 
 
 class FamilyTree {
   public:
@@ -28,6 +28,7 @@ class FamilyTree {
     void displayTree(const std::string &name, int level,
                      std::vector<bool> isLast);                          // 递归显示家谱
     std::string loadFromJsonNode(const std::shared_ptr<JsonNode> &root); // 从 JsonNode 加载数据
+    std::shared_ptr<JsonNode> buildJsonNode(const std::string &name);    // 从成员构建 JsonNode
 };
 
 #endif // FAMILYTREE_H

@@ -1,5 +1,0 @@
-STRING John
-OBJECT
-STRING NewYork
-NOTEXIST
-STRING "hello"

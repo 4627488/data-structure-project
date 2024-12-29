@@ -27,14 +27,14 @@ endif
 $(DIRS):
 	mkdir -p $(DIST_DIR);
 	mkdir -p $(DIST_DIR)/$@;
-	echo -e "## 源代码" > $(DIST_DIR)/source_header.md;
+	echo "## 源代码" > $(DIST_DIR)/source_header.md;
 	@for ext in $(SRC_EXTENSIONS); do \
 		for file in ../$@/*.$$ext; do \
 			if [ -f $$file ]; then \
 				filename=$$(basename $$file); \
-				echo -e "### $$file\n\`\`\`cpp" > $(DIST_DIR)/$@/$$filename.md; \
+				echo "### $$file\n\`\`\`cpp" > $(DIST_DIR)/$@/$$filename.md; \
 				cat $$file >> $(DIST_DIR)/$@/$$filename.md; \
-				echo -e "\n\`\`\`" >> $(DIST_DIR)/$@/$$filename.md; \
+				echo "\n\`\`\`" >> $(DIST_DIR)/$@/$$filename.md; \
 			fi \
 		done \
 	done

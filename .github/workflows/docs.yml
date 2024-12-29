@@ -22,8 +22,8 @@ jobs:
     - name: Install Pandoc
       run: sudo apt-get install -y pandoc
 
-    - name: Run make
-      run: make
+    - name: Make Report
+      run: python3 make_docs.py
       working-directory: ./docs
     
     - name: Upload report

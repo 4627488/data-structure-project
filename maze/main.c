@@ -7,6 +7,7 @@ int cols;
 #define PATH 0
 #define WALL 1
 #define VISITED 2
+#define PATH_FOUND 3
 
 typedef struct {
     int x, y;
@@ -49,13 +50,13 @@ int isValid(int **maze, int x, int y) {
 void printMaze(int **maze) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            printf("%d ", maze[i][j]);
+            printf("%c ", maze[i][j] == WALL ? '#' : maze[i][j] == PATH_FOUND ? '*' : ' ');
         }
         printf("\n");
     }
 }
 
-void solveMaze(int **maze, Position start, Position end) {
+void solveMaze(int **maze, Position start, Position end, Position **prev) {
     Stack stack;
     initStack(&stack, rows * cols);
     push(&stack, start);
@@ -63,25 +64,34 @@ void solveMaze(int **maze, Position start, Position end) {
     // 定义四个方向：上、下、左、右
     int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
+
     while (!isStackEmpty(&stack)) {
         Position current = pop(&stack);
+
         if (current.x == end.x && current.y == end.y) {
             printf("Path found!\n");
+            // 回溯路径并标记
+            while (current.x != start.x || current.y != start.y) {
+                maze[current.x][current.y] = PATH_FOUND;
+                current = prev[current.x][current.y];
+            }
             return;
         }
 
         maze[current.x][current.y] = VISITED;
 
         // 尝试向四个方向移动
+        int foundNext = 0;
         for (int i = 0; i < 4; i++) {
             int newX = current.x + directions[i][0];
             int newY = current.y + directions[i][1];
             if (isValid(maze, newX, newY)) {
                 push(&stack, (Position){newX, newY});
+                prev[newX][newY] = current;
+                foundNext = 1;
             }
         }
     }
-
     printf("No path found.\n");
 }
 
@@ -95,8 +105,10 @@ int main() {
     fscanf(file, "%d %d", &rows, &cols);
 
     int **maze = (int **)malloc(rows * sizeof(int *));
+    Position **prev = (Position **)malloc(rows * sizeof(Position *));
     for (int i = 0; i < rows; i++) {
         maze[i] = (int *)malloc(cols * sizeof(int));
+        prev[i] = (Position *)malloc(cols * sizeof(Position));
     }
 
     for (int i = 0; i < rows; i++) {
@@ -109,7 +121,7 @@ int main() {
     Position start = {0, 0};             // 设置入口
     Position end = {rows - 1, cols - 1}; // 设置出口
 
-    solveMaze(maze, start, end);
+    solveMaze(maze, start, end, prev);
     printMaze(maze);
 
     for (int i = 0; i < rows; i++) {

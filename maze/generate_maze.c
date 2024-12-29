@@ -7,15 +7,31 @@
 #define PATH 0
 #define WALL 1
 
-void generateMaze(int maze[ROWS][COLS]) {
-    srand(time(NULL));
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
-            maze[i][j] = (rand() % 3 == 0) ? WALL : PATH; // 1/3概率生成墙
+int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+int inBounds(int x, int y) {
+    return x >= 0 && x < ROWS && y >= 0 && y < COLS;
+}
+
+void generateMaze(int maze[ROWS][COLS], int x, int y) {
+    int dirs[4] = {0, 1, 2, 3};
+    for (int i = 0; i < 4; i++) {
+        int j = rand() % 4;
+        int temp = dirs[i];
+        dirs[i] = dirs[j];
+        dirs[j] = temp;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        int nx = x + directions[dirs[i]][0] * 2;
+        int ny = y + directions[dirs[i]][1] * 2;
+
+        if (inBounds(nx, ny) && maze[nx][ny] == WALL) {
+            maze[nx][ny] = PATH;
+            maze[x + directions[dirs[i]][0]][y + directions[dirs[i]][1]] = PATH;
+            generateMaze(maze, nx, ny);
         }
     }
-    maze[0][0] = PATH;               // 确保入口是路径
-    maze[ROWS - 1][COLS - 1] = PATH; // 确保出口是路径
 }
 
 void saveMazeToFile(int maze[ROWS][COLS], const char *filename) {
@@ -36,8 +52,20 @@ void saveMazeToFile(int maze[ROWS][COLS], const char *filename) {
 
 int main() {
     int maze[ROWS][COLS];
-    generateMaze(maze);
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            maze[i][j] = WALL;
+        }
+    }
+
+    maze[0][0] = PATH;
+    maze[ROWS - 1][COLS - 1] = PATH;
+
+    srand(time(NULL));
+    generateMaze(maze, 0, 0);
+
     saveMazeToFile(maze, "maze.txt");
-    printf("Maze generated and saved to maze.txt\n");
+    printf("Maze generated and saved to maze.txt.\n");
     return 0;
 }

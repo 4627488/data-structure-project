@@ -17,8 +17,8 @@ jobs:
       uses: zauguin/install-texlive@v3
       with:
         packages: >
-            l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math graphicx titling fancyhdr
-
+            l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math fancyvrb
+ 
     - name: Install Pandoc
       run: sudo apt-get install -y pandoc
 

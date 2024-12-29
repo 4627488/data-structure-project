@@ -1,8 +1,8 @@
 # 《数据结构》 课程设计 2024秋
 
+[![Build Documentation](https://github.com/4627488/data-structure-project/actions/workflows/docs.yml/badge.svg)](https://github.com/4627488/data-structure-project/actions/workflows/docs.yml)
 
-
-## 课程设计题目
+## 课程设计题目和要求
 
 [课程设计题目](./problems.md)
 
@@ -35,12 +35,14 @@
 
 ## 编译课程设计报告
 
-报告基于markdown编写，使用pandoc生成pdf文件。已经写好了Makefile文件，只需要执行以下命令。
+报告基于 markdown 编写，使用 pandoc 生成 PDF。`docs` 目录下包含了报告的部分 markdown 源文件和 Makefile。
 
 ```shell
 cd docs
 make pdf
 ```
+
+亦可在 [Actions - Build Documentation](https://github.com/4627488/data-structure-project/actions/workflows/docs.yml) 中的 Artifacts 下载。
 
 ## 许可证
 

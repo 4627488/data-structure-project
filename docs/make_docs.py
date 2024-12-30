@@ -63,7 +63,7 @@ def render_markdown():
                 if os.path.isfile(file):
                     filename = os.path.basename(file)
                     with open(os.path.join(DIST_DIR, dir, f"{filename}.md"), "w", encoding="utf-8") as f:
-                        f.write(f"## {filename} (共 {count_lines_in_file(file)} 行)\n\n```{ext}\n")
+                        f.write(f"### {filename} (共 {count_lines_in_file(file)} 行)\n\n```{ext}\n")
                         with open(file, "r", encoding="utf-8") as src:
                             f.write(src.read())
                         f.write("\n```\n")

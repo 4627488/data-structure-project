@@ -2,11 +2,9 @@
 
 ## 行数统计
 
-```{.bash include=exec}
-cloc --exclude-dir=docs .
 ```
-
-总行数: $2620$
+{{ code_line_summary }}
+```
 
 ## 项目总结
 

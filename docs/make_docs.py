@@ -79,6 +79,12 @@ def render_markdown():
     with open(os.path.join(DIST_DIR, "end.md"), "w", encoding="utf-8") as f:
         f.write(end_template.render(args))
 
+def render_summary():
+    args["code_line_summary"] = ""
+    for dir in DIRS:
+        args["code_line_summary"] += f"{dir}: {args[f'{dir}_lines']} Lines\n"
+    args["code_line_summary"] += f"\n{args['total_lines']} Lines in Total\n"
+
 def build_pdf():
     sources = ' '.join([f'"{source}"' for pattern in SOURCES for source in glob.glob(pattern)])
     command = f"pandoc --highlight-style=tango -o {OUTPUT} {sources} --pdf-engine=xelatex --wrap=auto"
@@ -95,6 +101,7 @@ def clean():
 def main():
     create_dirs()
     count_lines()
+    render_summary()
     render_markdown()
     generate_sources()
     build_pdf()

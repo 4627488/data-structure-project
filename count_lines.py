@@ -3,9 +3,7 @@ import os
 exts = ['.cpp', '.c', '.h']
 avoid_dirs = ['.git','docs']
 
-def count_lines_in_file(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return sum(1 for line in file if line.strip())
+
 
 def count_lines_in_directory(directory):
     total_lines = 0

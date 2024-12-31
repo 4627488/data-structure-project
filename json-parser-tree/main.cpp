@@ -17,10 +17,14 @@ std::string testJson(const std::string &json, const std::string &queries) {
     while (std::getline(queryStream, query)) {
         try {
             auto node = root->query(query);
-            if (auto strNode = std::dynamic_pointer_cast<JsonStringNode>(node)) {
+            if (auto strNode =
+                    std::dynamic_pointer_cast<JsonStringNode>(node)) {
                 result += "STRING " + strNode->value + "\n";
-            } else if (auto boolNode = std::dynamic_pointer_cast<JsonBoolNode>(node)) {
-                result += "BOOL " + std::string(boolNode->value ? "true" : "false") + "\n";
+            } else if (auto boolNode =
+                           std::dynamic_pointer_cast<JsonBoolNode>(node)) {
+                result += "BOOL " +
+                          std::string(boolNode->value ? "true" : "false") +
+                          "\n";
             } else {
                 result += "OBJECT\n";
             }
@@ -37,7 +41,8 @@ void runTest(const std::string &jsonFile, const std::string &queryFile,
     std::ifstream queryInput(queryFile);
     std::ifstream expectedInput(expectedFile);
 
-    if (!jsonInput.is_open() || !queryInput.is_open() || !expectedInput.is_open()) {
+    if (!jsonInput.is_open() || !queryInput.is_open() ||
+        !expectedInput.is_open()) {
         std::cerr << "Unable to open test files" << std::endl;
         return;
     }
@@ -95,7 +100,8 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     if (argc < 4 || argc > 5) {
-        std::cerr << "Usage: " << argv[0] << " <json-file> <query-file> <expected-file> [-v]"
+        std::cerr << "Usage: " << argv[0]
+                  << " <json-file> <query-file> <expected-file> [-v]"
                   << std::endl;
         return 1;
     }

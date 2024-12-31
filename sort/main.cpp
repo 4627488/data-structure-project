@@ -26,7 +26,8 @@ void generateSamples() {
             std::reverse(sample.begin(), sample.end());
         } else if (i > 1) {
             // 随机样本
-            std::generate(sample.begin(), sample.end(), [&]() { return dis(gen); });
+            std::generate(sample.begin(), sample.end(),
+                          [&]() { return dis(gen); });
         }
         for (const auto &num : sample) {
             outFile << num << " ";
@@ -47,13 +48,14 @@ void loadSamples(std::vector<std::vector<int>> &samples) {
     }
 }
 
-void measureSortTime(void (*sortFunc)(std::vector<int> &), std::vector<int> sample,
-                     const std::string &sortName) {
+void measureSortTime(void (*sortFunc)(std::vector<int> &),
+                     std::vector<int> sample, const std::string &sortName) {
     auto start = std::chrono::high_resolution_clock::now();
     sortFunc(sample);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
-    std::cout << sortName << "排序耗时: " << duration.count() << "秒" << std::endl;
+    std::cout << sortName << "排序耗时: " << duration.count() << "秒"
+              << std::endl;
 }
 
 void countFrequency(const std::vector<int> &sample) {
@@ -62,7 +64,8 @@ void countFrequency(const std::vector<int> &sample) {
         frequency[num]++;
     }
 
-    std::vector<std::pair<int, int>> freqVec(frequency.begin(), frequency.end());
+    std::vector<std::pair<int, int>> freqVec(frequency.begin(),
+                                             frequency.end());
     std::sort(freqVec.begin(), freqVec.end(),
               [](const auto &a, const auto &b) { return a.second > b.second; });
 

@@ -17,7 +17,8 @@ class Date {
 
     std::string toString() const; // 将日期转换为字符串，格式为 "YYYY-MM-DD"
 
-    friend std::ostream &operator<<(std::ostream &os, const Date &date); // 重载输出运算符
+    friend std::ostream &operator<<(std::ostream &os,
+                                    const Date &date); // 重载输出运算符
 
     bool operator==(const Date &date) const; // 重载相等运算符
     bool operator<(const Date &date) const;

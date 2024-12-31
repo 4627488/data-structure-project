@@ -19,7 +19,8 @@ std::shared_ptr<JsonNode> JsonNode::getChild(const std::string &key) {
     throw std::invalid_argument("Invalid key");
 }
 
-std::vector<std::pair<std::string, std::shared_ptr<JsonNode>>> JsonNode::getChildren() {
+std::vector<std::pair<std::string, std::shared_ptr<JsonNode>>>
+JsonNode::getChildren() {
     std::vector<std::pair<std::string, std::shared_ptr<JsonNode>>> childrenVec;
     for (const auto &child : children) {
         childrenVec.push_back(child);
@@ -35,8 +36,8 @@ std::shared_ptr<JsonNode> JsonNode::query(const std::string &queryStr) {
     while (std::getline(stream >> std::ws, token, '.')) {
         currentNode = currentNode->getChild(token);
         if (verbose) {
-            std::cerr << "JsonNode::query(" << queryStr << ") -> " << currentNode->to_string()
-                      << std::endl;
+            std::cerr << "JsonNode::query(" << queryStr << ") -> "
+                      << currentNode->to_string() << std::endl;
         }
         if (!currentNode) {
             throw std::invalid_argument("Invalid query string");
@@ -52,7 +53,8 @@ std::shared_ptr<JsonNode> JsonNode::operator[](const std::string &key) {
 std::string JsonNode::to_string() {
     std::string str;
     if (verbose) {
-        std::cout << "JsonNode::to_string() -> " << children.size() << std::endl;
+        std::cout << "JsonNode::to_string() -> " << children.size()
+                  << std::endl;
     }
     for (const auto &child : children) {
         str += child.first + ": " + child.second->to_string() + ", ";
@@ -88,15 +90,19 @@ std::string JsonStringNode::to_json() {
 JsonListNode::JsonListNode() {
     value = {};
 }
-JsonListNode::JsonListNode(const std::vector<std::shared_ptr<JsonNode>> &val) : value(val) {}
+JsonListNode::JsonListNode(const std::vector<std::shared_ptr<JsonNode>> &val)
+    : value(val) {}
 
 std::string JsonListNode::to_string() {
     std::string str;
-    if (verbose) std::cout << "JsonListNode::to_string() -> " << value.size() << std::endl;
+    if (verbose)
+        std::cout << "JsonListNode::to_string() -> " << value.size()
+                  << std::endl;
     for (const auto &val : value) {
         str += val->to_string() + ", ";
     }
-    if (verbose) std::cout << "JsonListNode::to_string() -> " << str << std::endl;
+    if (verbose)
+        std::cout << "JsonListNode::to_string() -> " << str << std::endl;
     if (str.empty()) return "List[]";
     str.pop_back(), str.pop_back();
     return "List[" + str + "]";
@@ -125,7 +131,8 @@ std::string JsonBoolNode::to_json() {
 std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
     std::shared_ptr<JsonNode> node;
     if (verbose) {
-        // std::cout << "JsonParser::parseObject() -> " << stream.str() << std::endl;
+        // std::cout << "JsonParser::parseObject() -> " << stream.str() <<
+        // std::endl;
     }
     char ch;
     stream >> std::ws;
@@ -133,7 +140,8 @@ std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
     if (ch == '{') {
         node = std::make_shared<JsonNode>();
         if (verbose) {
-            std::cout << "JsonParser::parseObject() -> " << "Object" << std::endl;
+            std::cout << "JsonParser::parseObject() -> " << "Object"
+                      << std::endl;
         }
         while (stream >> std::ws >> ch && ch != '}') {
             stream >> std::ws >> ch;
@@ -160,7 +168,8 @@ std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
         }
         do {
             auto valueNode = parseObject(stream);
-            std::dynamic_pointer_cast<JsonListNode>(node)->value.push_back(valueNode);
+            std::dynamic_pointer_cast<JsonListNode>(node)->value.push_back(
+                valueNode);
         } while (stream >> std::ws >> ch && ch != ']');
     } else if (ch == '"') {
         stream >> ch;
@@ -180,7 +189,8 @@ std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
             node = std::make_shared<JsonBoolNode>(value == "true");
         } else {
             if (verbose) {
-                std::cerr << "Invalid JSON: " << value << " " << ch << std::endl;
+                std::cerr << "Invalid JSON: " << value << " " << ch
+                          << std::endl;
             }
             throw std::invalid_argument("Invalid JSON");
         }

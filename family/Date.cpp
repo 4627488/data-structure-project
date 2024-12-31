@@ -10,8 +10,8 @@ Date::Date(const std::string &dateStr) {
     }
     std::istringstream iss(dateStr);
     char delimiter;
-    if (!(iss >> year >> delimiter >> month >> delimiter >> day) || delimiter != '-' || month < 1 ||
-        month > 12 || day < 1 || day > 31) {
+    if (!(iss >> year >> delimiter >> month >> delimiter >> day) ||
+        delimiter != '-' || month < 1 || month > 12 || day < 1 || day > 31) {
         throw std::invalid_argument("Invalid date format");
     }
 }
@@ -21,8 +21,9 @@ std::string Date::toString() const {
         return "";
     }
     std::ostringstream oss;
-    oss << std::setw(4) << std::setfill('0') << year << '-' << std::setw(2) << std::setfill('0')
-        << month << '-' << std::setw(2) << std::setfill('0') << day;
+    oss << std::setw(4) << std::setfill('0') << year << '-' << std::setw(2)
+        << std::setfill('0') << month << '-' << std::setw(2)
+        << std::setfill('0') << day;
     return oss.str();
 }
 

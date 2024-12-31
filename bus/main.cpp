@@ -16,7 +16,8 @@ const int MAX_LINE = 1000;
 struct Station {
     string name;
     int stationId;
-    vector<pair<int, int>> lines; // <lineId, InlineId> 该站点所属的线路, 以及在线路中的编号
+    vector<pair<int, int>>
+        lines; // <lineId, InlineId> 该站点所属的线路, 以及在线路中的编号
     bool operator<(const Station &other) const {
         return stationId < other.stationId;
     }
@@ -69,7 +70,8 @@ void readCSV(const string &filename) {
             lines[lineId].lineId = lineId;
         }
         lines[lineId].stationIds.push_back(stationId);
-        assert(lines[lineId].stationIds.size() == InlineId + 1); // 检查站点编号是否连续
+        assert(lines[lineId].stationIds.size() ==
+               InlineId + 1); // 检查站点编号是否连续
     }
 }
 
@@ -79,7 +81,9 @@ vector<pair<string, string>> findTransferLeastPath(const int startStationId,
     vector<pair<string, string>> path; // <stationName, lineName>
     vector<int> dist(MAX_STATION, numeric_limits<int>::max());
     vector<pair<int, int>> prev(MAX_STATION, {-1, -1}); // <stationId, lineId>
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    priority_queue<pair<int, int>, vector<pair<int, int>>,
+                   greater<pair<int, int>>>
+        pq;
 
     dist[startStationId] = 0;
     pq.push({0, startStationId});
@@ -121,7 +125,9 @@ vector<pair<string, string>> findLeastStationPath(const int startStationId,
     vector<pair<string, string>> path; // <stationName, lineName>
     vector<int> dist(MAX_STATION, numeric_limits<int>::max());
     vector<pair<int, int>> prev(MAX_STATION, {-1, -1}); // <stationId, lineId>
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    priority_queue<pair<int, int>, vector<pair<int, int>>,
+                   greater<pair<int, int>>>
+        pq;
 
     dist[startStationId] = 0;
     pq.push({0, startStationId});

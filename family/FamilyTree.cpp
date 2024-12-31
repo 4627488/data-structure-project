@@ -9,14 +9,23 @@
 
 bool verbose = false;
 
-std::string FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) {
-    std::string name = std::dynamic_pointer_cast<JsonStringNode>(root->getChild("name"))->value;
-    Member member =
-        Member(name, std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))->value,
-               std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))->value,
-               std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))->value,
-               std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))->value,
-               std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))->value);
+std::string
+FamilyTree::loadFromJsonNode(const std::shared_ptr<JsonNode> &root) {
+    std::string name =
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("name"))
+            ->value;
+    Member member = Member(
+        name,
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("birthDate"))
+            ->value,
+        std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isMarried"))
+            ->value,
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("address"))
+            ->value,
+        std::dynamic_pointer_cast<JsonBoolNode>(root->getChild("isAlive"))
+            ->value,
+        std::dynamic_pointer_cast<JsonStringNode>(root->getChild("deathDate"))
+            ->value);
     std::shared_ptr<JsonListNode> childrenNode =
         std::dynamic_pointer_cast<JsonListNode>(root->getChild("children"));
     if (childrenNode) {
@@ -60,9 +69,12 @@ std::shared_ptr<JsonNode> FamilyTree::buildJsonNode(const std::string &name) {
     node->children["name"] = std::make_shared<JsonStringNode>(name);
     node->children["birthDate"] =
         std::make_shared<JsonStringNode>(members[name].birthDate.toString());
-    node->children["isMarried"] = std::make_shared<JsonBoolNode>(members[name].isMarried);
-    node->children["address"] = std::make_shared<JsonStringNode>(members[name].address);
-    node->children["isAlive"] = std::make_shared<JsonBoolNode>(members[name].isAlive);
+    node->children["isMarried"] =
+        std::make_shared<JsonBoolNode>(members[name].isMarried);
+    node->children["address"] =
+        std::make_shared<JsonStringNode>(members[name].address);
+    node->children["isAlive"] =
+        std::make_shared<JsonBoolNode>(members[name].isAlive);
     node->children["deathDate"] =
         std::make_shared<JsonStringNode>(members[name].deathDate.toString());
     node->children["children"] = childrenNode;
@@ -79,7 +91,8 @@ void FamilyTree::saveToFile(const std::string &filename) {
     file.close();
 }
 
-void FamilyTree::displayTree(const std::string &name, int level, std::vector<bool> isLast) {
+void FamilyTree::displayTree(const std::string &name, int level,
+                             std::vector<bool> isLast) {
     for (int i = 0; i < level; ++i) {
         if (i == level - 1) {
             std::cout << (isLast[i] ? "└──" : "├──");
@@ -87,8 +100,8 @@ void FamilyTree::displayTree(const std::string &name, int level, std::vector<boo
             std::cout << (isLast[i] ? "     " : "│    ");
         }
     }
-    std::cout << name << " (" << members[name].birthDate << "~" << members[name].deathDate << ")"
-              << std::endl;
+    std::cout << name << " (" << members[name].birthDate << "~"
+              << members[name].deathDate << ")" << std::endl;
     if (children.find(name) != children.end()) {
         for (size_t i = 0; i < children[name].size(); ++i) {
             isLast.push_back(i == children[name].size() - 1);
@@ -108,17 +121,17 @@ void FamilyTree::displayFamilyTree() {
 
 void FamilyTree::displayGeneration(int n) {
     std::cout << "=== 第 " << n << " 代 ===" << std::endl;
-    std::function<void(const std::string &, int)> displayGen = [&](const std::string &name,
-                                                                   int level) {
-        if (level == n) {
-            members[name].Print();
-        }
-        if (children.find(name) != children.end()) {
-            for (const auto &child : children[name]) {
-                displayGen(child, level + 1);
+    std::function<void(const std::string &, int)> displayGen =
+        [&](const std::string &name, int level) {
+            if (level == n) {
+                members[name].Print();
             }
-        }
-    };
+            if (children.find(name) != children.end()) {
+                for (const auto &child : children[name]) {
+                    displayGen(child, level + 1);
+                }
+            }
+        };
 
     if (!rootName.empty()) {
         displayGen(rootName, 0);
@@ -149,8 +162,10 @@ void FamilyTree::searchByBirthDate(const std::string &dateStr) {
 }
 
 // 确定两人关系：直系亲属、旁系亲属、非亲属
-void FamilyTree::determineRelationship(const std::string &name1, const std::string &name2) {
-    if (members.find(name1) == members.end() || members.find(name2) == members.end()) {
+void FamilyTree::determineRelationship(const std::string &name1,
+                                       const std::string &name2) {
+    if (members.find(name1) == members.end() ||
+        members.find(name2) == members.end()) {
         throw std::runtime_error("未找到成员" + name1 + "或" + name2);
     }
 

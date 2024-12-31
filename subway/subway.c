@@ -24,6 +24,7 @@ int partition(Edge arr[], int low, int high) {
     return i + 1;
 }
 
+// 快排
 void quickSort(Edge arr[], int low, int high) {
     if (low < high) {
         int pi = partition(arr, low, high);
@@ -39,7 +40,8 @@ int find(int parent[], int u) {
     return parent[u];
 }
 
-void unite(int parent[], int rank[], int u, int v) {
+// 并查集的合并
+void unite(int parent[], int rank[], int u, int v) { 
     int rootU = find(parent, u);
     int rootV = find(parent, v);
     if (rootU != rootV) {

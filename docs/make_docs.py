@@ -17,13 +17,18 @@ def run_command(command):
     if result.returncode != 0:
         raise Exception(f"Command failed: {command}")
     
-def format_source_code():
-    for dir in DIRS:
-        for ext in SRC_EXTENSIONS:
-            for file in glob.glob(f"../{dir}/*.{ext}"):
-                if os.path.isfile(file):
-                    command = f"clang-format -i -style=file:../.clang-format {file}"
-                    run_command(command)
+def format_cpp_code(code: str) -> str:
+    process = subprocess.Popen(
+        ['clang-format'],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    formatted_code, error = process.communicate(input=code)
+    if error:
+        raise RuntimeError(f"Error formatting code: {error}")
+    return formatted_code
 
 def create_dirs():
     if not os.path.exists(DIST_DIR):
@@ -108,7 +113,6 @@ def clean():
     shutil.rmtree(DIST_DIR, ignore_errors=True)
 
 def main():
-    format_source_code()
     create_dirs()
     count_lines()
     render_summary()

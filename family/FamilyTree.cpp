@@ -43,7 +43,10 @@ void FamilyTree::loadFromFile(const std::string &filename) {
 
     JsonParser parser;
     auto family = parser.parse(jsonString);
-    std::cout << family->to_json() << std::endl;
+    if (verbose) {
+        std::cout << "家谱数据：" << std::endl;
+        std::cout << family->to_json() << std::endl;
+    }
     rootName = loadFromJsonNode(family);
 }
 

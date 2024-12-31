@@ -2,7 +2,23 @@
 #include <iostream>
 
 const std::string FAMILY_DATA_FILE = "familyData.json";
+const std::string GREEN = "\033[32m";
+const std::string RESET = "\033[0m";
 
+#ifdef _WIN32
+#include <windows.h>
+
+void enableVirtualTerminalProcessing() {
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE) return;
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode)) return;
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+}
+#endif
 int main() {
     FamilyTree familyTree;
     try {
@@ -14,7 +30,6 @@ int main() {
 
     int choice;
     do {
-        // ├ └ │ ─ ┌ ┐ └ ┘
         std::cout << "┌───────家谱管理系统──────┐" << std::endl;
         std::cout << "│1. 显示家谱              │" << std::endl;
         std::cout << "│2. 显示第 n 代所有人信息 │" << std::endl;
@@ -26,7 +41,7 @@ int main() {
         std::cout << "│8. 修改成员信息          │" << std::endl;
         std::cout << "│9. 保存并退出            │" << std::endl;
         std::cout << "└─────────────────────────┘" << std::endl;
-        std::cout << "请选择功能编号 (1-9): ";
+        std::cout << GREEN << "请选择操作：" << RESET;
         std::cin >> choice;
 
         try {
@@ -36,14 +51,15 @@ int main() {
                 break;
             case 2: {
                 int generation;
-                std::cout << "请输入代数(0 为根节点)：";
+                std::cout << GREEN << "请输入代数：" << RESET;
                 std::cin >> generation;
                 familyTree.displayGeneration(generation);
                 break;
             }
             case 3: {
                 std::string name;
-                std::cout << "请输入姓名：";
+                //std::cout << "请输入姓名：";
+                std::cout << GREEN << "请输入姓名：" << RESET;
                 std::cin >> name;
                 auto member = familyTree.findMemberByName(name);
                 member.Print();
@@ -51,28 +67,32 @@ int main() {
             }
             case 4: {
                 std::string birthDate;
-                std::cout << "请输入出生日期：";
+                //std::cout << "请输入出生日期：";
+                std::cout << GREEN << "请输入出生日期：" << RESET;
                 std::cin >> birthDate;
                 familyTree.searchByBirthDate(birthDate);
                 break;
             }
             case 5: {
                 std::string name1, name2;
-                std::cout << "请输入第一个人的姓名：";
+                //std::cout << "请输入第一个人的姓名：";
+                std::cout << GREEN << "请输入第一个人的姓名：" << RESET;
                 std::cin >> name1;
-                std::cout << "请输入第二个人的姓名：";
+                //std::cout << "请输入第二个人的姓名：";
+                std::cout << GREEN << "请输入第二个人的姓名：" << RESET;
                 std::cin >> name2;
                 familyTree.determineRelationship(name1, name2);
                 break;
             }
             case 6: {
                 std::string parentName, childName;
-                std::cout << "请输入父母的姓名：";
+                std::cout << GREEN << "请输入父母的姓名：" << RESET;
                 std::cin >> parentName;
-                std::cout << "请输入孩子的姓名：";
+                std::cout << GREEN << "请输入孩子的姓名：" << RESET;
                 std::cin >> childName;
                 Member child(childName);
                 familyTree.addChild(parentName, child);
+                familyTree.modifyMember(childName);
                 break;
             }
             case 7: {

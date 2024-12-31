@@ -35,11 +35,13 @@
 
 ## 编译课程设计报告
 
-报告基于 markdown 编写，使用 pandoc 生成 PDF。`docs` 目录下包含了报告的部分 markdown 源文件和 Makefile。
+报告基于 markdown 编写，使用 pandoc 生成 PDF。`docs` 目录下包含了报告的部分 markdown 源文件.
+
+使用 Python 脚本编译：
 
 ```shell
 cd docs
-make pdf
+python make_docs.py
 ```
 
 亦可在 [Actions - Build Documentation](https://github.com/4627488/data-structure-project/actions/workflows/docs.yml) 中的 Artifacts 下载。

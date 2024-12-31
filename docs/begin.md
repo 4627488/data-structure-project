@@ -38,6 +38,12 @@ header-includes:
 \end{titlepage}
 \newpage
 
-\tableofcontents 
+<style>
+  ul {
+    line-height: 1.2; /* 调整行间距 */
+  }
+</style>
+
+\tableofcontents
 
 \newpage

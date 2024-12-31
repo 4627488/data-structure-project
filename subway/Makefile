@@ -2,8 +2,8 @@
 
 all: subway
 
-subway: subway.cpp
-	g++ -o subway subway.cpp
+subway: subway.c
+	gcc -o subway subway.c
 
 test: subway
 	./subway < test/test.in > test/test.out

@@ -1,9 +1,9 @@
 #ifndef MEMBER_H
 #define MEMBER_H
 
+#include "Date.h"
 #include <string>
 #include <vector>
-#include "Date.h"
 
 class Member {
   public:

@@ -64,7 +64,6 @@ void solveMaze(int **maze, Position start, Position end, Position **prev) {
     // 定义四个方向：上、下、左、右
     int directions[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-
     while (!isStackEmpty(&stack)) {
         Position current = pop(&stack);
 

@@ -16,6 +16,14 @@ def run_command(command):
     result = subprocess.run(command, shell=True)
     if result.returncode != 0:
         raise Exception(f"Command failed: {command}")
+    
+def format_source_code():
+    for dir in DIRS:
+        for ext in SRC_EXTENSIONS:
+            for file in glob.glob(f"../{dir}/*.{ext}"):
+                if os.path.isfile(file):
+                    command = f"clang-format -i -style=file:../.clang-format {file}"
+                    run_command(command)
 
 def create_dirs():
     if not os.path.exists(DIST_DIR):
@@ -100,6 +108,7 @@ def clean():
     shutil.rmtree(DIST_DIR, ignore_errors=True)
 
 def main():
+    format_source_code()
     create_dirs()
     count_lines()
     render_summary()

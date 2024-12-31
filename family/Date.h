@@ -1,8 +1,8 @@
 #ifndef DATE_H
 #define DATE_H
 
-#include <string>
 #include <ostream>
+#include <string>
 
 class Date {
   public:

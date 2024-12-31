@@ -58,7 +58,7 @@ int main() {
             }
             case 3: {
                 std::string name;
-                //std::cout << "请输入姓名：";
+                // std::cout << "请输入姓名：";
                 std::cout << GREEN << "请输入姓名：" << RESET;
                 std::cin >> name;
                 auto member = familyTree.findMemberByName(name);
@@ -67,7 +67,7 @@ int main() {
             }
             case 4: {
                 std::string birthDate;
-                //std::cout << "请输入出生日期：";
+                // std::cout << "请输入出生日期：";
                 std::cout << GREEN << "请输入出生日期：" << RESET;
                 std::cin >> birthDate;
                 familyTree.searchByBirthDate(birthDate);
@@ -75,10 +75,10 @@ int main() {
             }
             case 5: {
                 std::string name1, name2;
-                //std::cout << "请输入第一个人的姓名：";
+                // std::cout << "请输入第一个人的姓名：";
                 std::cout << GREEN << "请输入第一个人的姓名：" << RESET;
                 std::cin >> name1;
-                //std::cout << "请输入第二个人的姓名：";
+                // std::cout << "请输入第二个人的姓名：";
                 std::cout << GREEN << "请输入第二个人的姓名：" << RESET;
                 std::cin >> name2;
                 familyTree.determineRelationship(name1, name2);

@@ -41,7 +41,7 @@ int find(int parent[], int u) {
 }
 
 // 并查集的合并
-void unite(int parent[], int rank[], int u, int v) { 
+void unite(int parent[], int rank[], int u, int v) {
     int rootU = find(parent, u);
     int rootV = find(parent, v);
     if (rootU != rootV) {

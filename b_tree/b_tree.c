@@ -150,7 +150,8 @@ void fill(BTreeNode *node, int idx) {
 
         child->numKeys += 1;
         sibling->numKeys -= 1;
-    } else if (idx != node->numKeys && node->children[idx + 1]->numKeys >= M / 2) {
+    } else if (idx != node->numKeys &&
+               node->children[idx + 1]->numKeys >= M / 2) {
         BTreeNode *child = node->children[idx];
         BTreeNode *sibling = node->children[idx + 1];
 

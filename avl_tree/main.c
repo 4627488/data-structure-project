@@ -25,7 +25,8 @@ void generate_primes(int *primes, int max) {
 void write_results(const char *filename, int *nums, int size, AVLTree *tree) {
     FILE *file = fopen(filename, "w");
     for (int i = 0; i < size; i++) {
-        fprintf(file, "%d %s\n", nums[i], search_avl_tree(tree, nums[i]) ? "yes" : "no");
+        fprintf(file, "%d %s\n", nums[i],
+                search_avl_tree(tree, nums[i]) ? "yes" : "no");
     }
     fclose(file);
 }

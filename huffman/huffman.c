@@ -23,10 +23,12 @@ void minHeapify(MinHeap *minHeap, int idx) {
     int left = 2 * idx + 1;
     int right = 2 * idx + 2;
 
-    if (left < minHeap->size && minHeap->array[left]->freq < minHeap->array[smallest]->freq)
+    if (left < minHeap->size &&
+        minHeap->array[left]->freq < minHeap->array[smallest]->freq)
         smallest = left;
 
-    if (right < minHeap->size && minHeap->array[right]->freq < minHeap->array[smallest]->freq)
+    if (right < minHeap->size &&
+        minHeap->array[right]->freq < minHeap->array[smallest]->freq)
         smallest = right;
 
     if (smallest != idx) // 需要旋转
@@ -40,7 +42,8 @@ MinHeap *createMinHeap(unsigned capacity) {
     MinHeap *minHeap = (MinHeap *)malloc(sizeof(MinHeap));
     minHeap->size = 0;
     minHeap->capacity = capacity;
-    minHeap->array = (HuffmanNode **)malloc(minHeap->capacity * sizeof(HuffmanNode *));
+    minHeap->array =
+        (HuffmanNode **)malloc(minHeap->capacity * sizeof(HuffmanNode *));
     return minHeap;
 }
 
@@ -137,7 +140,8 @@ void generateCodes(HuffmanNode *root, int arr[], int top, char codes[][256]) {
     }
 }
 
-void saveCodesToFile(char data[], char codes[][256], int size, const char *codeFile) {
+void saveCodesToFile(char data[], char codes[][256], int size,
+                     const char *codeFile) {
     FILE *file = fopen(codeFile, "w");
     if (!file) {
         perror("Failed to open file");
@@ -145,13 +149,15 @@ void saveCodesToFile(char data[], char codes[][256], int size, const char *codeF
     }
 
     for (int i = 0; i < size; i++) {
-        fprintf(file, "%d %s\n", (unsigned char)data[i], codes[(unsigned char)data[i]]);
+        fprintf(file, "%d %s\n", (unsigned char)data[i],
+                codes[(unsigned char)data[i]]);
     }
 
     fclose(file);
 }
 
-static int bitBuffer = 0; // 公共的writeBit 缓冲区，当剩余不足8位时，先不写入文件
+static int bitBuffer =
+    0; // 公共的writeBit 缓冲区，当剩余不足8位时，先不写入文件
 static int bitCount = 0;
 
 void writeBit(FILE *file, int bit) {
@@ -174,7 +180,8 @@ void flushBits(FILE *file) {
     }
 }
 
-void encodeFile(const char *inputFile, const char *outputFile, const char *codeFile) {
+void encodeFile(const char *inputFile, const char *outputFile,
+                const char *codeFile) {
     int freq[257] = {0}; // 多一个位置用于存储EOF标记
     calculateFrequencies(inputFile, freq);
 
@@ -221,7 +228,8 @@ void encodeFile(const char *inputFile, const char *outputFile, const char *codeF
     fclose(output);
 }
 
-HuffmanNode *buildHuffmanTreeFromCodes(char codes[257][256], char data[], int size) {
+HuffmanNode *buildHuffmanTreeFromCodes(char codes[257][256], char data[],
+                                       int size) {
     HuffmanNode *root = createNode('$', 0);
     for (int i = 0; i < size; i++) {
         HuffmanNode *current = root;
@@ -244,7 +252,8 @@ HuffmanNode *buildHuffmanTreeFromCodes(char codes[257][256], char data[], int si
     return root;
 }
 
-void decodeFile(const char *inputFile, const char *outputFile, const char *codeFile) {
+void decodeFile(const char *inputFile, const char *outputFile,
+                const char *codeFile) {
     FILE *codeFilePtr = fopen(codeFile, "r");
     if (!codeFilePtr) {
         perror("Failed to open code file");

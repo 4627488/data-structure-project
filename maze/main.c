@@ -50,7 +50,9 @@ int isValid(int **maze, int x, int y) {
 void printMaze(int **maze) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            printf("%c ", maze[i][j] == WALL ? '#' : maze[i][j] == PATH_FOUND ? '*' : ' ');
+            printf("%c ", maze[i][j] == WALL         ? '#'
+                          : maze[i][j] == PATH_FOUND ? '*'
+                                                     : ' ');
         }
         printf("\n");
     }

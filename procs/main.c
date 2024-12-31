@@ -119,13 +119,15 @@ void update_active_processes() {
                     unsigned long start_time; // 第22个字段
                     unsigned long rss;        // 第24个字段
                     fscanf(stat_file,
-                           "%*d %s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d"
+                           "%*d %s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u "
+                           "%*u %*u %*d %*d %*d"
                            "%*d %*d %*d %lu %*d %lu %*u %*u %*u %*u %*u %*d",
                            name, &start_time, &rss);
                     fclose(stat_file);
 
                     // 将 start_time 转换为时间戳
-                    start_time = boot_time + (start_time / sysconf(_SC_CLK_TCK));
+                    start_time =
+                        boot_time + (start_time / sysconf(_SC_CLK_TCK));
                     // rss是实际占用内存，以页为单位存放，一般是4K每页，所有要乘以4
                     long memory = rss * 4;
 
@@ -220,8 +222,8 @@ void print_ended_processes() {
     printf("已结束进程:\n");
     EndedProcess *current = ended_head;
     while (current != NULL) {
-        printf("进程名: %s, 持续时间: %ds, 结束时间: %s", current->name, current->duration,
-               ctime(&current->end_time));
+        printf("进程名: %s, 持续时间: %ds, 结束时间: %s", current->name,
+               current->duration, ctime(&current->end_time));
         current = current->next;
     }
 }

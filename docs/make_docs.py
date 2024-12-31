@@ -43,6 +43,7 @@ def generate_sources():
                 if os.path.isfile(file):
                     filename = os.path.basename(file)
                     SOURCES.append(os.path.join(DIST_DIR, dir, f"{filename}.md"))
+        SOURCES.append(os.path.join(DIST_DIR, "newpage.md"))
     SOURCES.append(os.path.join(DIST_DIR, "end.md"))
         
 def count_lines():

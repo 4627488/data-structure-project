@@ -1,6 +1,7 @@
 # 3、家谱管理系统（必做）（树）
 
 ## 项目简介
+
 本项目是一个简单的家谱管理系统，允许用户管理家族成员的信息，包括添加、删除、修改成员信息，显示家谱结构，查询成员信息等功能。
 
 家谱数据以 JSON 格式存储在文件中，程序启动时会加载该文件中的数据，用户对家谱数据的修改保存到文件中。文件 `familyData.json` 中包含了一个示例家谱数据，可以用于测试和演示。
@@ -8,6 +9,7 @@
 本题目的核心逻辑集中在对 *父子关系* 的维护（`children`）以及对 *成员详细信息* 的维护（`members`）上，再配合一些辅助函数（如递归显示、查找、修改等），就形成了完整的家谱管理功能。
 
 ## 文件结构
+
 - `Member.h` 和 `Member.cpp`：定义了家族成员的类及其相关操作。
 - `FamilyTree.h` 和 `FamilyTree.cpp`：定义了家谱树的类及其相关操作。
 - `main.cpp`：主程序入口，提供用户交互界面。
@@ -23,6 +25,7 @@ make && ./bin/family_tree
 ```
 
 ## 功能说明
+
 - 显示家谱：显示整个家谱结构。
 - 显示第 n 代所有人信息：按代数显示成员信息。
 - 按姓名查询成员信息：根据姓名查询成员详细信息。
@@ -36,30 +39,36 @@ make && ./bin/family_tree
 ## 核心数据结构
 
 1. `std::map<std::string, Member> members`  
+   
    - 键（key）：`std::string` 类型，用于存储成员的姓名。  
-   - 值（value）：`Member` 对象，包含该成员的各项信息（出生日期、死亡日期、是否在世、是否已婚、地址、父亲姓名等）。  
-   - 这个容器相当于一个*姓名 -> 成员信息*的快速查找表（基于红黑树实现的有序 map）。  
-   - 当我们需要根据姓名来获取一个成员的详细信息时，会在此处进行查找。
+   - 值（value）：`Member` 对象，包含该成员的各项信息（出生日期、死亡日期、是否在世、是否已婚、地址、父亲姓名等）。
+   
+这个容器相当于一个*姓名 -> 成员信息*的快速查找表（基于红黑树实现的有序 map）。当我们需要根据姓名来获取一个成员的详细信息时，会在此处进行查找。
 
 2. `std::map<std::string, std::vector<std::string>> children`  
+   
    - 键（key）：`std::string` 类型，同样是成员的姓名（通常用作*父亲姓名*）。  
    - 值（value）：`std::vector<std::string>` 类型，存储该父亲姓名所对应的孩子姓名列表。  
-   - 这实际上是一个*姓名 -> 子女列表*的邻接表结构。  
-   - 当我们需要得到某个成员的所有孩子时，就可以在此处直接找到对应的孩子姓名列表。
+   
+这实际上是一个*姓名 -> 子女列表*的邻接表结构。当我们需要得到某个成员的所有孩子时，就可以在此处直接找到对应的孩子姓名列表。
 
-3. `std::string rootName`  
+3. `std::string rootName` 
+    
    - 整个家谱树的根节点姓名。在家谱中，往往会有一个最早的祖先作为根节点。程序在加载完家谱 JSON 数据后，会根据 JSON 最外层对象对应的人的姓名，设置 `rootName`。
 
 4. `Member` 类  
-   - 存储与某个家族成员相关的所有重要信息，例如：  
-     - `name`：姓名  
-     - `birthDate`：出生日期（`Date`类型）  
-     - `deathDate`：死亡日期（`Date`类型）  
-     - `isAlive`：是否在世  
-     - `isMarried`：是否已婚  
-     - `address`：地址  
-     - `fatherName`：父亲姓名（用来链接到父亲）  
-   - 提供了 `Print()` 方法用于输出该成员的基本信息。
+   
+   存储与某个家族成员相关的所有重要信息，例如：
+
+      + `name`：姓名  
+      + `birthDate`：出生日期（`Date`类型）  
+      + `deathDate`：死亡日期（`Date`类型）  
+      + `isAlive`：是否在世  
+      + `isMarried`：是否已婚  
+      + `address`：地址  
+      + `fatherName`：父亲姓名（用来链接到父亲）
+
+   并提供了 `Print()` 方法用于输出该成员的基本信息。
 
 通过这两张表（`members` 和 `children`），就可以在程序内部对家谱进行快速查询、添加、删除、修改等操作。可以把它理解为：`members` 是所有成员的详细信息库，而 `children` 则描述了*父 -> 子*的血缘关系*。
 
@@ -74,15 +83,16 @@ make && ./bin/family_tree
 
 ### 2. 从 JSON 节点递归加载家谱（`loadFromJsonNode`）
 
-该方法做了两件事：  
-  1. 创建/更新一个 `Member` 对象：  
-     - 从 JSON 节点中读取 `"name"`, `"birthDate"`, `"isMarried"`, `"address"`, `"isAlive"`, `"deathDate"` 这些字段来构造一个 `Member`。  
-     - 存储到 `members[name] = member;`。
-  2. 加载其子节点：  
-     - 获取该节点下的 `"children"`，如果有（`JsonListNode`），说明当前成员有孩子。  
-     - 对每一个孩子都递归调用 `loadFromJsonNode(child)`，获得孩子的名字 `childName`。  
-     - 把 `childName` 加到 `children[name]` 的孩子列表中，同时在 `members[childName]` 中登记它的 `fatherName = name`。  
-   - 这样一层一层往下，就把整棵家谱以树的方式构造了出来。
+该方法做了两件事：
+
+   1. 创建/更新一个 `Member` 对象：  
+      - 从 JSON 节点中读取 `"name"`, `"birthDate"`, `"isMarried"`, `"address"`, `"isAlive"`, `"deathDate"` 这些字段来构造一个 `Member`。  
+      - 存储到 `members[name] = member;`。
+   2. 加载其子节点：  
+      - 获取该节点下的 `"children"`，如果有（`JsonListNode`），说明当前成员有孩子。  
+      - 对每一个孩子都递归调用 `loadFromJsonNode(child)`，获得孩子的名字 `childName`。  
+      - 把 `childName` 加到 `children[name]` 的孩子列表中，同时在 `members[childName]` 中登记它的 `fatherName = name`。
+      - 这样一层一层往下，就把整棵家谱以树的方式构造了出来。
 
 该函数本质上是一个深度优先遍历（DFS）过程，从 JSON 根节点开始，依次递归到最底层的孩子节点，把每个节点的成员信息保存到 `members`，并在 `children` 中记录好父子关系。
 函数中的JSON读取功能实则是复用 *选做题18 树的应用* 中的 JSON 解析器，用于解析家谱数据。具体的 JSON 解析过程不在此赘述。

@@ -17,6 +17,8 @@ class JsonNode : public std::enable_shared_from_this<JsonNode> {
     std::shared_ptr<JsonNode> query(const std::string &queryStr);
     std::shared_ptr<JsonNode> operator[](const std::string &key);
     virtual std::string to_string();
+    virtual std::string display(int depth);
+    virtual std::string display();
     virtual std::string to_json();
 };
 
@@ -26,6 +28,7 @@ class JsonStringNode : public JsonNode {
     std::string value;
     std::string to_string() override;
     std::string to_json() override;
+    std::string display(int depth) override;
 };
 
 class JsonListNode : public JsonNode {
@@ -35,6 +38,7 @@ class JsonListNode : public JsonNode {
     std::vector<std::shared_ptr<JsonNode>> value;
     std::string to_string() override;
     std::string to_json() override;
+    std::string display(int depth) override;
 };
 
 class JsonBoolNode : public JsonNode {
@@ -43,6 +47,7 @@ class JsonBoolNode : public JsonNode {
     bool value;
     std::string to_string() override;
     std::string to_json() override;
+    std::string display(int depth) override;
 };
 
 class JsonParser {

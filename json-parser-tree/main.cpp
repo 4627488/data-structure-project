@@ -12,6 +12,9 @@ std::string testJson(const std::string &json, const std::string &queries) {
     std::istringstream queryStream(queries);
     JsonParser parser;
     auto root = parser.parse(jsonStream.str());
+    if (verbose) {
+        std::cout << root->display() << std::endl;
+    }
     std::string result;
     std::string query;
     while (std::getline(queryStream, query)) {

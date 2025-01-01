@@ -5,12 +5,15 @@ header-includes:
   - \usepackage{titling}
   - \usepackage{xeCJK}
   - \usepackage{fancyhdr}
+  - \usepackage{minted}
+  - \usemintedstyle{vs}
+  - \setminted{linenos=true, breaklines=true, fontsize=\small}
   - \pagestyle{fancy}
   - \fancyhead[L]{\leftmark}
   - \fancyhead[R]{《数据结构》课程设计报告}
-  - \fancyfoot[L]{github.com/4627488/data-structure-project}
+  - \fancyfoot[L]{\href{https://github.com/4627488/data-structure-project}{github.com/4627488/data-structure-project}}
   - \fancyfoot[C]{\thepage}
-  - \fancyfoot[R]{2024年12月}
+  - \fancyfoot[R]{2025年1月}
   - \pretitle{\begin{center}\vspace{\bigskipamount}\Huge\bfseries}
   - \posttitle{\end{center}}
   - \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
@@ -29,7 +32,7 @@ header-includes:
         学\hspace{1em}号： & 022330225 \\[0.5cm]
         班\hspace{1em}级： & 1623301 \\[5cm]
         指导教师： & 高航 \\[0.5cm]
-        完成日期： & 2024年12月 \\[2cm]
+        完成日期： & 2025 年 1 月 \\[2cm]
     \end{tabular}
     
     \vfill

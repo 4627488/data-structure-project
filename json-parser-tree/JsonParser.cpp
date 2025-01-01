@@ -67,6 +67,19 @@ std::string JsonNode::to_string() {
     return "Object{" + str + "}";
 }
 
+std::string JsonNode::display(int depth) {
+    std::string str;
+    for (const auto &child : children) {
+        str += std::string(depth * 2, ' ') + child.first + "\n";
+        str += child.second->display(depth + 1);
+    }
+    return str;
+}
+
+std::string JsonNode::display() {
+    return display(0);
+}
+
 std::string JsonNode::to_json() {
     std::string str;
     for (const auto &child : children) {
@@ -85,6 +98,10 @@ std::string JsonStringNode::to_string() {
 
 std::string JsonStringNode::to_json() {
     return "\"" + value + "\"";
+}
+
+std::string JsonStringNode::display(int depth) {
+    return std::string(depth * 2, ' ') + value + "\n";
 }
 
 JsonListNode::JsonListNode() {
@@ -118,6 +135,15 @@ std::string JsonListNode::to_json() {
     return "[" + str + "]";
 }
 
+std::string JsonListNode::display(int depth) {
+    std::string str;
+    for (const auto &val : value) {
+        str += std::string(depth * 2, ' ') + "-\n";
+        str += val->display(depth + 1);
+    }
+    return str;
+}
+
 JsonBoolNode::JsonBoolNode(bool val) : value(val) {}
 
 std::string JsonBoolNode::to_string() {
@@ -128,12 +154,12 @@ std::string JsonBoolNode::to_json() {
     return value ? "true" : "false";
 }
 
+std::string JsonBoolNode::display(int depth) {
+    return std::string(depth * 2, ' ') + (value ? "true" : "false") + "\n";
+}
+
 std::shared_ptr<JsonNode> JsonParser::parseObject(std::istringstream &stream) {
     std::shared_ptr<JsonNode> node;
-    if (verbose) {
-        // std::cout << "JsonParser::parseObject() -> " << stream.str() <<
-        // std::endl;
-    }
     char ch;
     stream >> std::ws;
     ch = stream.peek();

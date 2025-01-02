@@ -2,20 +2,22 @@
 #include <stdlib.h>
 
 typedef struct {
-    int u, v, weight;
+    int u, v, w; // 边的两个顶点和权重
 } Edge;
 
+// 交换两条边
 void swap(Edge *a, Edge *b) {
     Edge temp = *a;
     *a = *b;
     *b = temp;
 }
 
-int partition(Edge arr[], int low, int high) {
-    int pivot = arr[high].weight;
+// 合并
+int _sort(Edge arr[], int low, int high) {
+    int pivot = arr[high].w;
     int i = low - 1;
     for (int j = low; j < high; j++) {
-        if (arr[j].weight < pivot) {
+        if (arr[j].w < pivot) {
             i++;
             swap(&arr[i], &arr[j]);
         }
@@ -24,71 +26,73 @@ int partition(Edge arr[], int low, int high) {
     return i + 1;
 }
 
-// 快排
-void quickSort(Edge arr[], int low, int high) {
+// 归并排序
+void sort(Edge arr[], int low, int high) {
     if (low < high) {
-        int pi = partition(arr, low, high);
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
+        int pi = _sort(arr, low, high);
+        sort(arr, low, pi - 1);
+        sort(arr, pi + 1, high);
     }
 }
 
-int find(int parent[], int u) {
-    if (parent[u] != u) {
-        parent[u] = find(parent, parent[u]);
+// 并查集查找
+int find(int fa[], int u) {
+    if (fa[u] != u) {
+        fa[u] = find(fa, fa[u]); // 路径压缩
     }
-    return parent[u];
+    return fa[u];
 }
 
-// 并查集的合并
-void unite(int parent[], int rank[], int u, int v) {
-    int rootU = find(parent, u);
-    int rootV = find(parent, v);
+// 并查集合并
+void unite(int fa[], int rank[], int u, int v) {
+    int rootU = find(fa, u);
+    int rootV = find(fa, v);
     if (rootU != rootV) {
         if (rank[rootU] > rank[rootV]) {
-            parent[rootV] = rootU;
+            fa[rootV] = rootU;
         } else if (rank[rootU] < rank[rootV]) {
-            parent[rootU] = rootV;
+            fa[rootU] = rootV;
         } else {
-            parent[rootV] = rootU;
+            fa[rootV] = rootU;
             rank[rootU]++;
         }
     }
 }
 
 int main() {
-    int n, m;
+    int n, m; // 顶点数和边数
     scanf("%d %d", &n, &m);
     Edge *edges = (Edge *)malloc(m * sizeof(Edge));
     for (int i = 0; i < m; ++i) {
-        scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].weight);
+        scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].w);
     }
 
-    quickSort(edges, 0, m - 1);
+    // 边按权重排序
+    sort(edges, 0, m - 1);
 
-    int *parent = (int *)malloc((n + 1) * sizeof(int));
+    int *fa = (int *)malloc((n + 1) * sizeof(int));
     int *rank = (int *)calloc(n + 1, sizeof(int));
     for (int i = 1; i <= n; ++i) {
-        parent[i] = i;
+        fa[i] = i;
     }
 
-    int maxWeight = 0;
+    int maxw = 0; // 记录生成树的最大权重
     for (int i = 0; i < m; ++i) {
-        if (find(parent, edges[i].u) != find(parent, edges[i].v)) {
-            unite(parent, rank, edges[i].u, edges[i].v);
-            if (edges[i].weight > maxWeight) {
-                maxWeight = edges[i].weight;
+        if (find(fa, edges[i].u) != find(fa, edges[i].v)) {
+            unite(fa, rank, edges[i].u, edges[i].v);
+            if (edges[i].w > maxw) {
+                maxw = edges[i].w;
             }
-            if (find(parent, 1) == find(parent, n)) {
+            if (find(fa, 1) == find(fa, n)) {
                 break;
             }
         }
     }
 
-    printf("%d\n", maxWeight);
+    printf("%d\n", maxw);
 
     free(edges);
-    free(parent);
+    free(fa);
     free(rank);
 
     return 0;

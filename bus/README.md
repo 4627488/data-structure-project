@@ -4,42 +4,53 @@
 
 1. **Station**: 表示一个公交站点，包含站点名称、站点ID和该站点所属的线路及在线路中的编号。
 
-```cpp
-struct Station {
-    string name;
+```c
+typedef struct {
+    char name[MAX_NAME_LEN];
     int stationId;
-    vector<pair<int, int>> lines; // <lineId, InlineId>
-};
+    int lines[MAX_LINE][2]; // <lineId, InlineId>
+    int lineCount;
+} Station;
 ```
 
 2. **Line**: 表示一条公交线路，包含线路名称、线路ID和该线路经过的站点ID。
 
-```cpp
-struct Line {
-    string name;
+```c
+typedef struct {
+    char name[MAX_NAME_LEN];
     int lineId;
-    vector<int> stationIds;
-};
+    int stationIds[MAX_STATION];
+    int stationCount;
+} Line;
+```
+
+3. **PrevNode**: 表示路径中的前一个节点，包含站点ID和线路ID。
+
+```c
+typedef struct {
+    int stationId;
+    int lineId;
+} PrevNode;
 ```
 
 ## 算法设计思想
 
 1. **读取CSV文件**: 读取CSV文件并解析每一行数据，构建站点和线路的映射关系。
 
-```cpp
-void readCSV(const string &filename);
+```c
+void readCSV(const char *filename);
 ```
 
 2. **最少转车次数的乘车路线**: 使用Dijkstra算法，计算从起始站点到终点站点的最少转车次数的路线。
 
-```cpp
-vector<pair<string, string>> findTransferLeastPath(const int startStationId, const int endStationId);
+```c
+void findTransferLeastPath(int start, int end);
 ```
 
 3. **经过站点数量最少的乘车路线**: 使用Dijkstra算法，计算从起始站点到终点站点的经过站点数量最少的路线。
 
-```cpp
-vector<pair<string, string>> findLeastStationPath(const int startStationId, const int endStationId);
+```c
+void findLeastStationPath(int start, int end);
 ```
 
 ## 测试数据和结果
@@ -70,15 +81,11 @@ CSV文件内容如下：
 路线:
 南航北门
   |
-  |
   | 乘坐 719路(武夷绿洲--南京南站)
-  |
   |
 茶花路
   |
-  |
   | 乘坐 84路(南京南站--理工大)
-  |
   |
 理工大
 ---------------------------------
@@ -86,57 +93,39 @@ CSV文件内容如下：
 路线:
 南航北门
   |
-  |
   | 乘坐 719路(武夷绿洲--南京南站)
-  |
   |
 翠屏山
   |
-  |
   | 乘坐 711路(综保区场站--安德门)
-  |
   |
 托乐嘉
   |
-  |
   | 乘坐 711路(综保区场站--安德门)
-  |
   |
 麻田路
   |
-  |
   | 乘坐 768路(宁杭高铁江宁站--安德门)
-  |
   |
 景明佳园
   |
-  |
   | 乘坐 61路(景明佳园--江东中路·江东门北街)
-  |
   |
 应天大街
   |
-  |
   | 乘坐 306路(楠溪江东街--银城东苑)
-  |
   |
 莫愁湖公园南门
   |
-  |
   | 乘坐 306路(楠溪江东街--银城东苑)
-  |
   |
 瑞金路
   |
-  |
   | 乘坐 Y14路夜间(中花岗总站--公交四公司)
-  |
   |
 孝陵卫
   |
-  |
   | 乘坐 5路(南湾营--长江路·估衣廊)
-  |
   |
 理工大
 ```
@@ -156,7 +145,3 @@ CSV文件内容如下：
    - 每条边最多会被处理一次，处理每条边的时间复杂度为 $O(1)$，因此总的时间复杂度为 $O(E)$。
    - 综合起来，Dijkstra算法的时间复杂度为 $O(E + V \log V)$。
 
-## 算法的改进方法
-
-1. **启发式搜索**: 使用A\*算法等启发式搜索算法来提高搜索效率。
-2. **并行计算**: 使用多线程或并行计算技术来加速路径搜索过程。

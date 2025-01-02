@@ -13,6 +13,7 @@ struct Station {
 ```
 
 2. **Line**: 表示一条公交线路，包含线路名称、线路ID和该线路经过的站点ID。
+
 ```cpp
 struct Line {
     string name;
@@ -24,16 +25,19 @@ struct Line {
 ## 算法设计思想
 
 1. **读取CSV文件**: 读取CSV文件并解析每一行数据，构建站点和线路的映射关系。
+
 ```cpp
 void readCSV(const string &filename);
 ```
 
 2. **最少转车次数的乘车路线**: 使用Dijkstra算法，计算从起始站点到终点站点的最少转车次数的路线。
+
 ```cpp
 vector<pair<string, string>> findTransferLeastPath(const int startStationId, const int endStationId);
 ```
 
 3. **经过站点数量最少的乘车路线**: 使用Dijkstra算法，计算从起始站点到终点站点的经过站点数量最少的路线。
+
 ```cpp
 vector<pair<string, string>> findLeastStationPath(const int startStationId, const int endStationId);
 ```
@@ -43,6 +47,7 @@ vector<pair<string, string>> findLeastStationPath(const int startStationId, cons
 ### 测试数据
 
 CSV文件内容如下：
+
 ```
 线路名,站点,公交线路ID,线内ID,站点ID
 1路(建康路·夫子庙--南堡公园),建康路·夫子庙,0,0,1942
@@ -62,7 +67,7 @@ CSV文件内容如下：
 请输入终点站点: 理工大
 ---------------------------------
 最少转车次数: 1
-路线: 
+路线:
 南航北门
   |
   |
@@ -78,7 +83,7 @@ CSV文件内容如下：
 理工大
 ---------------------------------
 经过站点数量最少: 8
-路线: 
+路线:
 南航北门
   |
   |
@@ -139,6 +144,7 @@ CSV文件内容如下：
 ## 算法的时间复杂度
 
 1. **最少转车次数的乘车路线**: 使用Dijkstra算法，时间复杂度为 $O(E + V \log V)$，其中 $E$ 是边的数量，$V$ 是顶点的数量。具体来说：
+
    - 初始化距离数组和优先队列的时间复杂度为 $O(V)$。
    - 每个顶点最多会被加入优先队列一次，加入和取出优先队列的时间复杂度为 $O(\log V)$，因此总的时间复杂度为 $O(V \log V)$。
    - 每条边最多会被处理一次，处理每条边的时间复杂度为 $O(1)$，因此总的时间复杂度为 $O(E)$。
@@ -152,5 +158,5 @@ CSV文件内容如下：
 
 ## 算法的改进方法
 
-1. **启发式搜索**: 使用A*算法等启发式搜索算法来提高搜索效率。
+1. **启发式搜索**: 使用A\*算法等启发式搜索算法来提高搜索效率。
 2. **并行计算**: 使用多线程或并行计算技术来加速路径搜索过程。

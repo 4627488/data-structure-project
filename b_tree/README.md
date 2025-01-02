@@ -72,7 +72,7 @@ XXX yes
 
 B-树的高度与节点数之间的关系为：
 
-$$ h \leq \log_{\lceil M/2 \rceil} \left( \frac{n+1}{2} \right) $$
+$$ h \leq \log\_{\lceil M/2 \rceil} \left( \frac{n+1}{2} \right) $$
 
 其中 $M=4$ 为节点的最大关键字数，$n$ 为节点数。因此，B-树的查找、插入和删除操作的时间复杂度为 $O(\log n)$。
 

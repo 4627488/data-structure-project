@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
     - name: Install TeX Live
       uses: zauguin/install-texlive@v3
@@ -21,13 +21,21 @@ jobs:
  
     - name: Install Pandoc
       run: sudo apt-get install -y pandoc
+      - name: Install TeX Live
+        uses: zauguin/install-texlive@v3
+        with:
+          packages: >
+            l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math fancyvrb framed titling fancyhdr
 
-    - name: Make Report
-      run: python3 make_docs.py
-      working-directory: ./docs
-    
-    - name: Upload report
-      uses: actions/upload-artifact@v4
-      with:
-        name: report
-        path: ./docs/report.pdf
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+
+      - name: Make Report
+        run: python3 make_docs.py
+        working-directory: ./docs
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: report
+          path: ./docs/report.pdf

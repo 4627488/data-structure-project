@@ -112,8 +112,8 @@ decodeFile(encodedFile, decodedFile, codeFile);
 
 Huffman编码算法的时间复杂度主要由以下几个部分组成：
 
-1. 计算字符频率：$O(n)$，其中$n$是输入字符的数量。
-2. 构建最小堆：$O(d \log d)$，其中$d$是不同字符的数量。
+1. 计算字符频率：$O(n)$，其中 $n$ 是输入字符的数量。
+2. 构建最小堆：$O(d \log d)$，其中 $d$ 是字符集的大小。
 3. 构建Huffman树：$O(d \log d)$。
 4. 生成Huffman编码：$O(d)$。
 5. 编码文件：$O(n)$。

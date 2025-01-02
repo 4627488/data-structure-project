@@ -17,12 +17,12 @@ header-includes:
 ---
 
 \begin{titlepage}
-    \centering
-    \vspace*{3cm}
-    
+\centering
+\vspace\*{3cm}
+
     \Huge\bfseries
     《数据结构》课程设计报告\\[2cm]
-    
+
     \Large
     \begin{tabular}{rl}
         姓\hspace{1em}名： & 黄耘青 \\[0.5cm]
@@ -31,10 +31,10 @@ header-includes:
         指导教师： & 高航 \\[0.5cm]
         完成日期： & 2025 年 1 月 \\[2cm]
     \end{tabular}
-    
+
     \vfill
     南京航空航天大学
-    
+
 \end{titlepage}
 \newpage
 

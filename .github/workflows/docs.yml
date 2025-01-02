@@ -19,13 +19,11 @@ jobs:
           packages: >
             l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math fancyvrb framed titling fancyhdr minted upquote
 
-      - name: Install Pandoc
-        run: sudo apt-get install -y pandoc
-      - name: Install TeX Live
-        uses: zauguin/install-texlive@v3
+      - name: Cache Pandoc
+        uses: actions/cache@v3
         with:
-          packages: >
-            l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math fancyvrb framed titling fancyhdr
+          path: /usr/bin/pandoc
+          key: ${{ runner.os }}-pandoc
 
       - name: Install Pandoc
         run: sudo apt-get install -y pandoc

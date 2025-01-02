@@ -44,6 +44,7 @@ header-includes:
   }
 </style>
 
+\renewcommand{\contentsname}{目录}
 \tableofcontents
 
 \newpage

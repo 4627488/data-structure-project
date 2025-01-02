@@ -101,7 +101,7 @@ def render_summary():
 
 def build_pdf():
     sources = ' '.join([f'"{source}"' for pattern in SOURCES for source in glob.glob(pattern)])
-    command = f'pandoc -o {OUTPUT} {sources} --pdf-engine=xelatex --highlight-style=tango --pdf-engine-opt=-shell-escape'
+    command = f'pandoc -o {OUTPUT} {sources} --pdf-engine=xelatex --highlight-style=tango'
     run_command(command)
 
 def build_docx():

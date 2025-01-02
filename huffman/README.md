@@ -23,20 +23,12 @@
 
 ## 使用方法
 
-### 构建项目
+### 构建&编译项目
 
-在项目根目录下运行以下命令以构建项目：
-
-```sh
-make
-```
-
-### 编码文件
-
-在项目根目录下运行以下命令以编码`source.txt`文件：
+构建项目，并编码`source.txt`文件：
 
 ```sh
-./huffman
+make && ./huffman
 ```
 
 ### 测试项目
@@ -59,38 +51,6 @@ make clean
 
 该命令将删除生成的目标文件和中间文件。
 
-## 数据结构
-
-### HuffmanNode
-
-```c
-typedef struct HuffmanNode {
-    char data;
-    unsigned freq;
-    struct HuffmanNode *left, *right;
-} HuffmanNode;
-```
-
-### MinHeap
-
-```c
-typedef struct MinHeap {
-    unsigned size;
-    unsigned capacity;
-    HuffmanNode **array;
-} MinHeap;
-```
-
-## 算法设计思想
-
-1. 计算每个字符的频率。
-2. 使用这些频率构建一个最小堆。（插入一个EOF节点，频率为1）
-3. 从最小堆中提取两个最小频率的节点，创建一个新节点，其频率为这两个节点频率之和，并将这两个节点作为新节点的子节点。
-4. 将新节点插入最小堆。
-5. 重复步骤3和4，直到堆中只剩下一个节点，这个节点就是Huffman树的根节点。
-6. 通过遍历Huffman树生成每个字符的Huffman编码。
-7. 使用生成的Huffman编码对文件进行编码和解码。
-
 ## 代码示例
 
 ### 编码文件
@@ -108,21 +68,74 @@ encodeFile(inputFile, encodedFile, codeFile);
 decodeFile(encodedFile, decodedFile, codeFile);
 ```
 
-## 算法时间复杂度
+## 数据结构
 
-Huffman编码算法的时间复杂度主要由以下几个部分组成：
+**哈夫曼树节点 (HuffmanNode)**
 
-1. 计算字符频率：$O(n)$，其中 $n$ 是输入字符的数量。
-2. 构建最小堆：$O(d \log d)$，其中 $d$ 是字符集的大小。
-3. 构建Huffman树：$O(d \log d)$。
-4. 生成Huffman编码：$O(d)$。
-5. 编码文件：$O(n)$。
-6. 解码文件：$O(n)$。
+```c
+typedef struct HuffmanNode {
+    char data;
+    unsigned freq;
+    struct HuffmanNode *left, *right;
+} HuffmanNode;
+```
 
-因此，Huffman编码算法的总体时间复杂度为$O(n + d \log d)$。
+`data`：存储字符或标志符，如内部节点用`$`表示。  
+`freq`：该字符或子树的频率。  
+`left` 和 `right`：指向子节点的指针。
 
-## 改进方法
+**小根堆 (MinHeap)**
 
-1. 使用更高效的数据结构，如斐波那契堆，可以进一步优化最小堆的构建和操作。
-2. 在实际应用中，可以结合其他压缩算法（如LZW）以提高压缩效率。
-3. 对于特定类型的数据，可以根据其特点设计专门的编码方案，以获得更好的压缩效果。
+```c
+typedef struct MinHeap {
+    unsigned size;
+    unsigned capacity;
+    HuffmanNode **array;
+} MinHeap;
+```
+
+`array`：一个存储哈夫曼节点指针的数组，用于维护小根堆。  
+`size`：当前堆中的元素数量。  
+`capacity`：堆的最大容量。
+
+## 算法设计思想
+
+1. 统计文本文件中每个字符的出现次数，结果存入`freq`数组。
+2. 将字符和频率转化为哈夫曼节点，并按频率最小构建小根堆。（特别地，插入一个EOF节点，频率为1）
+3. 反复从小根堆中取出两个频率最低的节点，合并为新节点，插回堆中。最终堆中只剩一个节点，即哈夫曼树的根节点。
+4. 使用深度优先搜索(DFS)遍历哈夫曼树，左分支记作`0`，右分支记作`1`，递归生成每个叶子节点的编码。
+5. 使用生成的Huffman编码对文件进行编码和解码。
+
+**文件编码**：遍历文件，每次将字符替换为对应的哈夫曼编码，并逐位写入文件。如果不满8位，则缓存，待补齐8位后写入。
+
+**文件解码**：逐位读取压缩文件，沿着哈夫曼树进行位移，直到找到叶子节点，即解码出字符。重复此过程直到读取到特殊的EOF标记。
+
+## 算法复杂度
+
+**小根堆维护 (minHeapify)**
+
+```c
+void minHeapify(MinHeap *minHeap, int idx)
+```
+
+维护小根堆的性质，使父节点的频率始终小于或等于子节点的频率。  
+时间复杂度：单次调整的复杂度为 $O(log n)$。
+空间复杂度：$O(n)$，用于存储频率和节点。
+
+**堆构建 (buildMinHeap)**
+
+```c
+void buildMinHeap(MinHeap *minHeap)
+```
+
+自底向上调整堆结构，使其成为小根堆。  
+时间复杂度：整体复杂度为$O(n)$。
+
+**构建哈夫曼树**
+
+```c
+HuffmanNode *buildHuffmanTree()
+```
+
+通过多次提取最小节点并合并，最终形成哈夫曼树。  
+时间复杂度：整体复杂度为 $O(n log n)$，其中 $n$ 为字符种类数量。

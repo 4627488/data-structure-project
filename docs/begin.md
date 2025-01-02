@@ -5,9 +5,6 @@ header-includes:
   - \usepackage{titling}
   - \usepackage{xeCJK}
   - \usepackage{fancyhdr}
-  - \usepackage{minted}
-  - \usemintedstyle{vs}
-  - \setminted{linenos=true, breaklines=true, fontsize=\small}
   - \pagestyle{fancy}
   - \fancyhead[L]{\leftmark}
   - \fancyhead[R]{《数据结构》课程设计报告}

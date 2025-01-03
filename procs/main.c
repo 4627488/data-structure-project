@@ -1,10 +1,19 @@
+#ifdef _WIN32
+#include <windows.h>
+#include <psapi.h>
+#elif __APPLE__
+#include <libproc.h>
+#include <sys/sysctl.h>
+#include <unistd.h>
+#else
 #include <dirent.h>
+#include <sys/sysinfo.h>
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/sysinfo.h>
 #include <time.h>
-#include <unistd.h>
 
 // 定义进程结构体
 typedef struct Process {
@@ -90,6 +99,135 @@ void update_active_processes() {
         current = current->next;
     }
 
+#ifdef _WIN32
+    DWORD aProcesses[1024], cbNeeded, cProcesses;
+    if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded)) {
+        perror("无法枚举进程");
+        return;
+    }
+
+    cProcesses = cbNeeded / sizeof(DWORD);
+    for (unsigned int i = 0; i < cProcesses; i++) {
+        if (aProcesses[i] != 0) {
+            char name[512];
+            DWORD memory = 0;
+            HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
+            if (hProcess) {
+                HMODULE hMod;
+                DWORD cbNeeded;
+                if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded)) {
+                    GetModuleBaseName(hProcess, hMod, name, sizeof(name) / sizeof(char));
+                    PROCESS_MEMORY_COUNTERS pmc;
+                    if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
+                        memory = pmc.WorkingSetSize / 1024;
+                    }
+                }
+
+                // 获取进程启动时间
+                FILETIME ftCreate, ftExit, ftKernel, ftUser;
+                if (GetProcessTimes(hProcess, &ftCreate, &ftExit, &ftKernel, &ftUser)) {
+                    ULARGE_INTEGER li;
+                    li.LowPart = ftCreate.dwLowDateTime;
+                    li.HighPart = ftCreate.dwHighDateTime;
+                    time_t start_time = (li.QuadPart - 116444736000000000ULL) / 10000000ULL;
+
+                    // 检查进程是否已经在活动列表中
+                    Process *current = active_head;
+                    int found = 0;
+                    while (current != NULL) {
+                        if (strcmp(current->name, name) == 0) {
+                            found = 1;
+                            current->updated = 1; // 标记为已更新
+                            break;
+                        }
+                        current = current->next;
+                    }
+
+                    if (!found) {
+                        add_active_process(name, memory, start_time);
+                        // 检查进程是否已经在已结束列表中
+                        EndedProcess *current = ended_head;
+                        while (current != NULL) {
+                            if (strcmp(current->name, name) == 0) {
+                                // 从已结束列表中移除
+                                if (current->prev == NULL) {
+                                    ended_head = current->next;
+                                } else {
+                                    current->prev->next = current->next;
+                                }
+                                if (current->next != NULL) {
+                                    current->next->prev = current->prev;
+                                }
+                                free(current);
+                                break;
+                            }
+                            current = current->next;
+                        }
+                    }
+                }
+                CloseHandle(hProcess);
+            }
+        }
+    }
+#elif __APPLE__
+    int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
+    size_t size;
+    if (sysctl(mib, 4, NULL, &size, NULL, 0) == -1) {
+        perror("无法获取进程信息");
+        return;
+    }
+
+    struct kinfo_proc *procs = malloc(size);
+    if (sysctl(mib, 4, procs, &size, NULL, 0) == -1) {
+        perror("无法获取进程信息");
+        free(procs);
+        return;
+    }
+
+    int proc_count = size / sizeof(struct kinfo_proc);
+    for (int i = 0; i < proc_count; i++) {
+        char name[512];
+        int memory = procs[i].kp_proc.p_vm_rssize * getpagesize() / 1024;
+        time_t start_time = procs[i].kp_proc.p_starttime.tv_sec;
+
+        proc_name(procs[i].kp_proc.p_pid, name, sizeof(name));
+
+        // 检查进程是否已经在活动列表中
+        Process *current = active_head;
+        int found = 0;
+        while (current != NULL) {
+            if (strcmp(current->name, name) == 0) {
+                found = 1;
+                current->updated = 1; // 标记为已更新
+                break;
+            }
+            current = current->next;
+        }
+
+        if (!found) {
+            add_active_process(name, memory, start_time);
+            // 检查进程是否已经在已结束列表中
+            EndedProcess *current = ended_head;
+            while (current != NULL) {
+                if (strcmp(current->name, name) == 0) {
+                    // 从已结束列表中移除
+                    if (current->prev == NULL) {
+                        ended_head = current->next;
+                    } else {
+                        current->prev->next = current->next;
+                    }
+                    if (current->next != NULL) {
+                        current->next->prev = current->prev;
+                    }
+                    free(current);
+                    break;
+                }
+                current = current->next;
+            }
+        }
+    }
+    free(procs);
+#else
     DIR *proc_dir = opendir("/proc");
     if (proc_dir == NULL) {
         perror("无法打开 /proc 目录");
@@ -173,6 +311,7 @@ void update_active_processes() {
         }
     }
     closedir(proc_dir);
+#endif
 }
 
 // 更新已结束进程列表
@@ -234,6 +373,7 @@ int main() {
         update_ended_processes();
         print_active_processes();
         print_ended_processes();
+        getchar();
     }
     return 0;
 }

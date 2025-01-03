@@ -27,7 +27,7 @@ int main() {
         if (!ok) {
             std::cerr << "家族树日期数据不合法" << std::endl;
             return 1;
-        }else{
+        } else {
             std::cout << "家族树日期数据校验通过" << std::endl;
         }
     } catch (const std::exception &e) {

@@ -1,6 +1,6 @@
 #ifdef _WIN32
-#include <windows.h>
 #include <psapi.h>
+#include <windows.h>
 #elif __APPLE__
 #include <libproc.h>
 #include <sys/sysctl.h>
@@ -111,12 +111,16 @@ void update_active_processes() {
         if (aProcesses[i] != 0) {
             char name[512];
             DWORD memory = 0;
-            HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
+            HANDLE hProcess =
+                OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,
+                            aProcesses[i]);
             if (hProcess) {
                 HMODULE hMod;
                 DWORD cbNeeded;
-                if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded)) {
-                    GetModuleBaseName(hProcess, hMod, name, sizeof(name) / sizeof(char));
+                if (EnumProcessModules(hProcess, &hMod, sizeof(hMod),
+                                       &cbNeeded)) {
+                    GetModuleBaseName(hProcess, hMod, name,
+                                      sizeof(name) / sizeof(char));
                     PROCESS_MEMORY_COUNTERS pmc;
                     if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
                         memory = pmc.WorkingSetSize / 1024;
@@ -125,11 +129,13 @@ void update_active_processes() {
 
                 // 获取进程启动时间
                 FILETIME ftCreate, ftExit, ftKernel, ftUser;
-                if (GetProcessTimes(hProcess, &ftCreate, &ftExit, &ftKernel, &ftUser)) {
+                if (GetProcessTimes(hProcess, &ftCreate, &ftExit, &ftKernel,
+                                    &ftUser)) {
                     ULARGE_INTEGER li;
                     li.LowPart = ftCreate.dwLowDateTime;
                     li.HighPart = ftCreate.dwHighDateTime;
-                    time_t start_time = (li.QuadPart - 116444736000000000ULL) / 10000000ULL;
+                    time_t start_time =
+                        (li.QuadPart - 116444736000000000ULL) / 10000000ULL;
 
                     // 检查进程是否已经在活动列表中
                     Process *current = active_head;

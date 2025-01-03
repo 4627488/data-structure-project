@@ -46,3 +46,7 @@ bool Date::operator<(const Date &date) const {
     }
     return day < date.day;
 }
+
+bool Date::operator>(const Date &date) const {
+    return date < *this;
+}

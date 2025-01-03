@@ -22,6 +22,7 @@ class Date {
 
     bool operator==(const Date &date) const; // 重载相等运算符
     bool operator<(const Date &date) const;
+    bool operator>(const Date &date) const;
 };
 
 #endif // DATE_H

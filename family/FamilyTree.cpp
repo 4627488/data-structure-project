@@ -321,3 +321,36 @@ void FamilyTree::modifyMember(const std::string &name) {
         }
     }
 }
+
+bool FamilyTree::verifyDate(const std::string &rootName) {
+    //父亲不能比孩子小，也不能比孩子出生日期死得早
+    std::function<bool(const std::string &)> verify = [&](const std::string &name) {
+        if (members.find(name) == members.end()) {
+            return true;
+        }
+        if (!members[name].fatherName.empty()) {
+            if (members.find(members[name].fatherName) == members.end()) {
+                std::cerr << "错误：父亲 " << members[name].fatherName << " 不存在" << std::endl;
+                return false;
+            }
+            if (members[members[name].fatherName].birthDate > members[name].birthDate) {
+                std::cerr << "错误：父亲 " << members[name].fatherName << " 出生日期晚于 " << name << std::endl;
+                return false;
+            }
+            if (!members[members[name].fatherName].isAlive &&
+                members[members[name].fatherName].deathDate < members[name].birthDate) {
+                std::cerr << "错误：父亲 " << members[name].fatherName << " 早于 " << name << " 的出生日期去世" << std::endl;
+                return false;
+            }
+        }
+        if (children.find(name) != children.end()) {
+            for (const auto &child : children[name]) {
+                if (!verify(child)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+    return verify(rootName);
+}

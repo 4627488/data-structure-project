@@ -23,6 +23,13 @@ int main() {
     FamilyTree familyTree;
     try {
         familyTree.loadFromFile(FAMILY_DATA_FILE);
+        bool ok = familyTree.verifyDate(familyTree.rootName);
+        if (!ok) {
+            std::cerr << "家族树日期数据不合法" << std::endl;
+            return 1;
+        }else{
+            std::cout << "家族树日期数据校验通过" << std::endl;
+        }
     } catch (const std::exception &e) {
         std::cerr << "加载家谱数据时发生错误: " << e.what() << std::endl;
         return 1;

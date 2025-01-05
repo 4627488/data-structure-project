@@ -28,7 +28,7 @@ header-includes:
     \vspace*{3cm}
     
     \fontsize{40}{50}\selectfont
-    \textbf{《数据结构》课程设计报告}\\[0.5cm]
+    \textbf{数据结构课程设计报告}\\[0.5cm]
 
     \fontsize{20}{30}\selectfont
     \textbf{2024-2025 学年第一学期}\\[3cm]

@@ -7,22 +7,22 @@
 #define MAX_LINE 1000
 #define MAX_NAME_LEN 100
 
-typedef struct {
+struct Station {
     char name[MAX_NAME_LEN];
     int stationId;
     int lines[MAX_LINE][2]; // <lineId, InlineId>
     int lineCount;
-} Station;
+};
 
-typedef struct {
+struct Line {
     char name[MAX_NAME_LEN];
     int lineId;
     int stationIds[MAX_STATION];
     int stationCount;
-} Line;
+};
 
-Station stations[MAX_STATION];
-Line lines[MAX_LINE];
+struct Station stations[MAX_STATION];
+struct Line lines[MAX_LINE];
 
 void initStationsAndLines() {
     for (int i = 0; i < MAX_STATION; i++) {

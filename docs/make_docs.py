@@ -3,6 +3,7 @@ import shutil
 import subprocess
 import glob
 import jinja2
+import re
 
 DIRS = ["procs", "maze", "family", "avl_tree", "huffman", "subway", "bus", "b_tree", "sort", "json-parser-tree"]
 SRC_EXTENSIONS = ["c", "cpp", "h"]
@@ -16,7 +17,7 @@ def run_command(command):
     result = subprocess.run(command, shell=True)
     if result.returncode != 0:
         raise Exception(f"Command failed: {command}")
-    
+
 def format_cpp_code(code: str) -> str:
     process = subprocess.Popen(
         ['clang-format'],
@@ -43,7 +44,7 @@ def create_dirs():
 def count_lines_in_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return sum(1 for line in file if line.strip())  
-    
+
 args = {}
 
 def generate_sources():
@@ -58,7 +59,7 @@ def generate_sources():
                     SOURCES.append(os.path.join(DIST_DIR, dir, f"{filename}.md"))
         SOURCES.append(os.path.join(DIST_DIR, "newpage.md"))
     SOURCES.append(os.path.join(DIST_DIR, "end.md"))
-        
+
 def count_lines():
     args["total_lines"] = 0
     for dir in DIRS:
@@ -85,8 +86,20 @@ def render_markdown():
             f.write(f"## 源代码 (共 {args[f'{dir}_lines']} 行)\n\n")
         readme_file = f"../{dir}/README.md"
         readme_template = jinja2.Template(open(readme_file, "r", encoding="utf-8").read())
+        rendered_content = readme_template.render(args) # 变量填充后的md内容
+        # 复制图片文件
+        image_paths = re.findall(r"!\[(.*?)\]\((.*?)\)", rendered_content)
+        for _, image_path in image_paths: # 找到所有引用的图片名
+            src_image_path = os.path.join("..", dir, image_path)
+            dest_image_path = os.path.join("dist", dir, image_path)
+            os.makedirs(os.path.dirname(dest_image_path), exist_ok=True)
+            shutil.copyfile(src_image_path, dest_image_path)
+        rendered_content = re.sub(
+            r"!\[(.*?)\]\((.*?)\)", rf"![\1](./dist/{dir}/\2)", rendered_content
+        )  # 替换dm内容中图片的路径为复制之后的
+
         with open(os.path.join(DIST_DIR, dir, "README.md"), "w", encoding="utf-8") as f:
-            f.write(readme_template.render(args))
+            f.write(rendered_content)
     with open(os.path.join(DIST_DIR, "begin.md"), "w", encoding="utf-8") as f:
         f.write(open("begin.md", "r", encoding="utf-8").read())
     end_template = jinja2.Template(open("end.md", "r", encoding="utf-8").read())
@@ -104,11 +117,6 @@ def build_pdf():
     command = f'pandoc -o {OUTPUT} {sources} --pdf-engine=xelatex --highlight-style=tango'
     run_command(command)
 
-def build_docx():
-    sources = ' '.join([f'"{source}"' for pattern in SOURCES for source in glob.glob(pattern)])
-    command = f"pandoc -o {OUTPUT_DOCX} {sources} --highlight-style=tango"
-    run_command(command)
-
 def clean():
     shutil.rmtree(DIST_DIR, ignore_errors=True)
 
@@ -119,7 +127,6 @@ def main():
     render_markdown()
     generate_sources()
     build_pdf()
-    build_docx()
     clean()
     print("Done!")
 

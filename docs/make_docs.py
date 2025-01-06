@@ -91,12 +91,13 @@ def render_markdown():
         image_paths = re.findall(r"!\[(.*?)\]\((.*?)\)", rendered_content)
         for _, image_path in image_paths: # 找到所有引用的图片名
             src_image_path = os.path.join("..", dir, image_path)
-            dest_image_path = os.path.join("dist", dir, image_path)
-            os.makedirs(os.path.dirname(dest_image_path), exist_ok=True)
-            shutil.copyfile(src_image_path, dest_image_path)
+            if os.path.isfile(src_image_path):  # 确保图片文件存在，如果是网络图片就不复制了
+                dest_image_path = os.path.join("dist", dir, image_path)
+                os.makedirs(os.path.dirname(dest_image_path), exist_ok=True)
+                shutil.copyfile(src_image_path, dest_image_path)
         rendered_content = re.sub(
-            r"!\[(.*?)\]\((.*?)\)", rf"![\1](./dist/{dir}/\2)", rendered_content
-        )  # 替换dm内容中图片的路径为复制之后的
+            r"!\[(.*?)\]\((?!http)(.*?)\)", rf"![\1](./dist/{dir}/\2)", rendered_content
+        )  # 替换md内容中本地图片的路径为复制之后的
 
         with open(os.path.join(DIST_DIR, dir, "README.md"), "w", encoding="utf-8") as f:
             f.write(rendered_content)

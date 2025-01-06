@@ -3,48 +3,63 @@
 #include <stdlib.h>
 
 void readPrimes(int *primes, int size);
-void writeResults(const char *filename, int *results, int size, int start);
+void writeResults(BTree *tree, const char *filename, int *queries, int size);
+
+int isPrime(int n) {
+    if (n < 2) {
+        return 0;
+    }
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 int main() {
     BTree *tree = createBTree();
     int primes[10000];
     readPrimes(primes, 10000);
 
-    // Build B-tree with primes
+    // 给B树插入10000个素数
     for (int i = 0; i < 10000; i++) {
         insert(tree, primes[i]);
     }
 
-    // Query 200-300
-    int results[101];
+    // 查询200-300的数是否在B树中
+    int queries[10001];
     for (int i = 200; i <= 300; i++) {
-        results[i - 200] = search(tree, i);
+        queries[i - 200] = i;
     }
-    writeResults("b-tree1.txt", results, 101, 200);
+    writeResults(tree, "b-tree1.txt", queries, 101);
 
-    // Delete primes 500-2000
+    // 删除500-2000的数
     for (int i = 500; i <= 2000; i++) {
         if (search(tree, i)) {
-            delete (tree, i);
+            removeKey(tree, i);
         }
     }
 
-    // Query 600-700
+    // 查询 600-700 的质数数是否在B树中
+    int size = 0;
     for (int i = 600; i <= 700; i++) {
-        results[i - 600] = search(tree, i);
+        if (isPrime(i)) {
+            queries[size++] = i;
+        }
     }
-    writeResults("b-tree2.txt", results, 101, 600);
+    writeResults(tree, "b-tree2.txt", queries, size);
 
-    // Insert even numbers 1-1000
+    // 插入1-1000的所有偶数
     for (int i = 2; i <= 1000; i += 2) {
         insert(tree, i);
     }
 
-    // Query 100-200 even numbers
+    // 查询100-200的所有偶数是否在B树中
     for (int i = 100; i <= 200; i += 2) {
-        results[(i - 100) / 2] = search(tree, i);
+        queries[i / 2 - 50] = i;
     }
-    writeResults("b-tree3.txt", results, 51, 100);
+    writeResults(tree, "b-tree3.txt", queries, 51);
 
     freeBTree(tree);
     return 0;
@@ -66,10 +81,11 @@ void readPrimes(int *primes, int size) {
     fclose(file);
 }
 
-void writeResults(const char *filename, int *results, int size, int start) {
+void writeResults(BTree *tree, const char *filename, int *queries, int size) {
     FILE *file = fopen(filename, "w");
     for (int i = 0; i < size; i++) {
-        fprintf(file, "%d %s\n", start + i, results[i] ? "yes" : "no");
+        fprintf(file, "%d %s\n", queries[i],
+                search(tree, queries[i]) ? "yes" : "no");
     }
     fclose(file);
 }

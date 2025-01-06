@@ -203,31 +203,41 @@ void FamilyTree::addChild(const std::string &parentName, Member child) {
     children[parentName].push_back(child.name);
 }
 
-void FamilyTree::deleteMember(const std::string &name) {
+// 删除成员
+// isForce 为 true 时强制删除，不再询问
+// isRoot 为 true 时同时从父亲的孩子列表中删除
+void FamilyTree::deleteMember(const std::string &name, bool isForce,
+                              bool isRoot) {
     if (members.find(name) == members.end()) {
-        throw std::runtime_error("未找到成员");
+        throw std::runtime_error("未找到成员@" + name);
     }
 
-    // 递归删除成员的孩子
-    if (children.find(name) != children.end()) {
-        for (const auto &child : children[name]) {
-            deleteMember(child);
+    auto &childrenList = children[name];
+    if (!isForce && !childrenList.empty()) {
+        std::cout << "成员 " << name << " 有孩子，确定要删除吗？(y/N)：";
+        std::string confirm;
+        std::cin >> confirm;
+        if (confirm != "Y" && confirm != "y") {
+            std::cout << "家谱树无更改。" << std::endl;
+            return;
         }
-        children.erase(name);
     }
-
-    // 从父母的孩子列表中删除该成员
-    if (!members[name].fatherName.empty()) {
-        auto &siblings = children[members[name].fatherName];
-        for (auto it = siblings.begin(); it != siblings.end(); ++it) {
+    // 递归删除孩子
+    for (const auto &child : childrenList) {
+        deleteMember(child, true, false);
+    }
+    if (isRoot) {
+        // 从父亲的孩子列表中删除该成员
+        for (auto it = children[members[name].fatherName].begin();
+             it != children[members[name].fatherName].end(); ++it) {
             if (*it == name) {
-                siblings.erase(it);
+                children[members[name].fatherName].erase(it);
                 break;
             }
         }
     }
-
-    // 删除成员
+    // 在邻接表和成员列表中删除该成员
+    children.erase(name);
     members.erase(name);
 }
 
@@ -300,25 +310,17 @@ void FamilyTree::modifyMember(const std::string &name) {
         if (members.find(newFatherName) == members.end()) {
             throw std::runtime_error("未找到这个父亲成员");
         }
+        // 从原父亲的孩子列表中删除该成员
+        for (auto it = children[oldFatherName].begin();
+             it != children[oldFatherName].end(); ++it) {
+            if (*it == name) {
+                children[oldFatherName].erase(it);
+                break;
+            }
+        }
+        // 添加到新父亲的孩子列表
+        children[newFatherName].push_back(name);
         member.fatherName = newFatherName;
-    }
-
-    // 更新父母的孩子列表
-    if (!member.fatherName.empty()) {
-        auto &siblings = children[member.fatherName];
-        for (auto it = siblings.begin(); it != siblings.end(); ++it) {
-            if (*it == name) {
-                *it = newName;
-                break;
-            }
-        }
-        auto &oldSiblings = children[oldFatherName];
-        for (auto it = oldSiblings.begin(); it != oldSiblings.end(); ++it) {
-            if (*it == name) {
-                oldSiblings.erase(it);
-                break;
-            }
-        }
     }
 }
 

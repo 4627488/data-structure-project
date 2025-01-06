@@ -24,8 +24,9 @@ class FamilyTree {
     void determineRelationship(const std::string &name1,
                                const std::string &name2);       // 确定两人关系
     void addChild(const std::string &parentName, Member child); // 添加孩子
-    void deleteMember(const std::string &name);                 // 删除成员
-    void modifyMember(const std::string &name);                 // 修改成员信息
+    void deleteMember(const std::string &name, bool isForce,
+                      bool isRoot);        // 删除成员
+    void modifyMember(const std::string &name);   // 修改成员信息
     bool verifyDate(const std::string &rootName); // 验证家族树的日期是否合法
   private:
     void displayTree(const std::string &name, int level,

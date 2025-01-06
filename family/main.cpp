@@ -106,7 +106,7 @@ int main() {
                 std::string name;
                 std::cout << "请输入要删除的成员姓名：";
                 std::cin >> name;
-                familyTree.deleteMember(name);
+                familyTree.deleteMember(name, false, true);
                 break;
             }
             case 8: {

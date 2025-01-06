@@ -17,7 +17,7 @@ jobs:
         uses: zauguin/install-texlive@v3
         with:
           packages: >
-            l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math fancyvrb framed titling fancyhdr minted upquote booktabs
+            l3build latex latex-bin luatex latex-bin-dev ctex xetex unicode-math fancyvrb framed titling fancyhdr minted upquote booktabs footnote
 
       - name: Cache Pandoc
         uses: actions/cache@v3

@@ -1,7 +1,6 @@
 #include "huffman.h"
 
-int main()
-{
+int main() {
     const char *inputFile = "source.txt";
     const char *encodedFile = "code.dat";
     const char *decodedFile = "recode.txt"; // 为什么不是decode呢?

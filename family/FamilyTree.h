@@ -7,8 +7,7 @@
 #include <memory>
 #include <string>
 
-class FamilyTree
-{
+class FamilyTree {
   public:
     std::map<std::string, Member>
         members; // 成员列表, key 为姓名, value 为成员对象

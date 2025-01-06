@@ -8,8 +8,7 @@ const std::string RESET = "\033[0m";
 #ifdef _WIN32
 #include <windows.h>
 
-void enableVirtualTerminalProcessing()
-{
+void enableVirtualTerminalProcessing() {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut == INVALID_HANDLE_VALUE) return;
 
@@ -20,32 +19,24 @@ void enableVirtualTerminalProcessing()
     SetConsoleMode(hOut, dwMode);
 }
 #endif
-int main()
-{
+int main() {
     FamilyTree familyTree;
-    try
-    {
+    try {
         familyTree.loadFromFile(FAMILY_DATA_FILE);
         bool ok = familyTree.verifyDate(familyTree.rootName);
-        if (!ok)
-        {
+        if (!ok) {
             std::cerr << "家族树日期数据不合法" << std::endl;
             return 1;
-        }
-        else
-        {
+        } else {
             std::cout << "家族树日期数据校验通过" << std::endl;
         }
-    }
-    catch (const std::exception &e)
-    {
+    } catch (const std::exception &e) {
         std::cerr << "加载家谱数据时发生错误: " << e.what() << std::endl;
         return 1;
     }
 
     int choice;
-    do
-    {
+    do {
         std::cout << "┌───────家谱管理系统──────┐" << std::endl;
         std::cout << "│1. 显示家谱              │" << std::endl;
         std::cout << "│2. 显示第 n 代所有人信息 │" << std::endl;
@@ -60,23 +51,19 @@ int main()
         std::cout << GREEN << "请选择操作：" << RESET;
         std::cin >> choice;
 
-        try
-        {
-            switch (choice)
-            {
+        try {
+            switch (choice) {
             case 1:
                 familyTree.displayFamilyTree();
                 break;
-            case 2:
-            {
+            case 2: {
                 int generation;
                 std::cout << GREEN << "请输入代数：" << RESET;
                 std::cin >> generation;
                 familyTree.displayGeneration(generation);
                 break;
             }
-            case 3:
-            {
+            case 3: {
                 std::string name;
                 // std::cout << "请输入姓名：";
                 std::cout << GREEN << "请输入姓名：" << RESET;
@@ -85,8 +72,7 @@ int main()
                 member.Print();
                 break;
             }
-            case 4:
-            {
+            case 4: {
                 std::string birthDate;
                 // std::cout << "请输入出生日期：";
                 std::cout << GREEN << "请输入出生日期：" << RESET;
@@ -94,8 +80,7 @@ int main()
                 familyTree.searchByBirthDate(birthDate);
                 break;
             }
-            case 5:
-            {
+            case 5: {
                 std::string name1, name2;
                 // std::cout << "请输入第一个人的姓名：";
                 std::cout << GREEN << "请输入第一个人的姓名：" << RESET;
@@ -106,8 +91,7 @@ int main()
                 familyTree.determineRelationship(name1, name2);
                 break;
             }
-            case 6:
-            {
+            case 6: {
                 std::string parentName, childName;
                 std::cout << GREEN << "请输入父母的姓名：" << RESET;
                 std::cin >> parentName;
@@ -118,16 +102,14 @@ int main()
                 familyTree.modifyMember(childName);
                 break;
             }
-            case 7:
-            {
+            case 7: {
                 std::string name;
                 std::cout << "请输入要删除的成员姓名：";
                 std::cin >> name;
                 familyTree.deleteMember(name, false, true);
                 break;
             }
-            case 8:
-            {
+            case 8: {
                 std::string name;
                 std::cout << "请输入要修改的成员姓名：";
                 std::cin >> name;
@@ -142,13 +124,10 @@ int main()
                 std::cout << "无效的选择，请重新输入。" << std::endl;
                 break;
             }
-        }
-        catch (const std::exception &e)
-        {
+        } catch (const std::exception &e) {
             std::cerr << "操作时发生错误: " << e.what() << std::endl;
         }
-        if (choice != 9)
-        {
+        if (choice != 9) {
             std::cout << "按 Enter 键继续...";
             std::cin.ignore();
             std::cin.get();

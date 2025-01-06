@@ -5,8 +5,7 @@
 #include <string>
 #include <vector>
 
-class Member
-{
+class Member {
   public:
     std::string name;       // 姓名
     Date birthDate;         // 出生日期

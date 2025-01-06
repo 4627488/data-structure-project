@@ -4,8 +4,7 @@
 #include <ostream>
 #include <string>
 
-class Date
-{
+class Date {
   public:
     int year;
     int month;

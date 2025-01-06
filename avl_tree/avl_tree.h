@@ -1,16 +1,14 @@
 #ifndef AVL_TREE_H
 #define AVL_TREE_H
 
-typedef struct AVLNode
-{
+typedef struct AVLNode {
     int key;
     struct AVLNode *left;
     struct AVLNode *right;
     int height;
 } AVLNode;
 
-typedef struct AVLTree
-{
+typedef struct AVLTree {
     AVLNode *root;
 } AVLTree;
 

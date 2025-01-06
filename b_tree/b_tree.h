@@ -3,16 +3,14 @@
 
 #define M 4 // B-tree order
 
-typedef struct BTreeNode
-{
+typedef struct BTreeNode {
     int keys[M - 1];
     struct BTreeNode *children[M];
     int numKeys;
     int isLeaf;
 } BTreeNode;
 
-typedef struct BTree
-{
+typedef struct BTree {
     BTreeNode *root;
 } BTree;
 

@@ -3,14 +3,12 @@
 #include <stdlib.h>
 
 // 获取节点的高度
-int height(AVLNode *node)
-{
+int height(AVLNode *node) {
     return node ? node->height : 0;
 }
 
 // 创建新节点
-AVLNode *create_node(int key)
-{
+AVLNode *create_node(int key) {
     AVLNode *node = (AVLNode *)malloc(sizeof(AVLNode));
     node->key = key;
     node->left = node->right = NULL;
@@ -19,8 +17,7 @@ AVLNode *create_node(int key)
 }
 
 // 右旋转
-AVLNode *right_rotate(AVLNode *y)
-{
+AVLNode *right_rotate(AVLNode *y) {
     AVLNode *x = y->left;
     AVLNode *T2 = x->right;
 
@@ -35,8 +32,7 @@ AVLNode *right_rotate(AVLNode *y)
 }
 
 // 左旋转
-AVLNode *left_rotate(AVLNode *x)
-{
+AVLNode *left_rotate(AVLNode *x) {
     AVLNode *y = x->right;
     AVLNode *T2 = y->left;
 
@@ -51,14 +47,12 @@ AVLNode *left_rotate(AVLNode *x)
 }
 
 // 计算节点的平衡因子
-int get_balance(AVLNode *node)
-{
+int get_balance(AVLNode *node) {
     return node ? height(node->left) - height(node->right) : 0;
 }
 
 // 插入新节点
-AVLNode *insert_node(AVLNode *node, int key)
-{
+AVLNode *insert_node(AVLNode *node, int key) {
     if (!node) return create_node(key);
 
     if (key < node->key)
@@ -79,15 +73,13 @@ AVLNode *insert_node(AVLNode *node, int key)
     if (balance < -1 && key > node->right->key) return left_rotate(node);
 
     // 左右情况
-    if (balance > 1 && key > node->left->key)
-    {
+    if (balance > 1 && key > node->left->key) {
         node->left = left_rotate(node->left);
         return right_rotate(node);
     }
 
     // 右左情况
-    if (balance < -1 && key < node->right->key)
-    {
+    if (balance < -1 && key < node->right->key) {
         node->right = right_rotate(node->right);
         return left_rotate(node);
     }
@@ -96,8 +88,7 @@ AVLNode *insert_node(AVLNode *node, int key)
 }
 
 // 查找最小值节点
-AVLNode *min_value_node(AVLNode *node)
-{
+AVLNode *min_value_node(AVLNode *node) {
     AVLNode *current = node;
     while (current->left != NULL)
         current = current->left;
@@ -105,33 +96,26 @@ AVLNode *min_value_node(AVLNode *node)
 }
 
 // 删除节点
-AVLNode *delete_node(AVLNode *root, int key)
-{
+AVLNode *delete_node(AVLNode *root, int key) {
     if (!root) return root;
 
     if (key < root->key)
         root->left = delete_node(root->left, key);
     else if (key > root->key)
         root->right = delete_node(root->right, key);
-    else
-    {
+    else {
         // 节点只有一个子节点或没有子节点
-        if ((root->left == NULL) || (root->right == NULL))
-        {
+        if ((root->left == NULL) || (root->right == NULL)) {
             AVLNode *temp = root->left ? root->left : root->right;
 
-            if (!temp)
-            {
+            if (!temp) {
                 temp = root;
                 root = NULL;
-            }
-            else
+            } else
                 *root = *temp;
 
             free(temp);
-        }
-        else
-        {
+        } else {
             // 有两个子节点的情况
             AVLNode *temp = min_value_node(root->right);
             root->key = temp->key;
@@ -149,16 +133,14 @@ AVLNode *delete_node(AVLNode *root, int key)
     // 重新平衡树
     if (balance > 1 && get_balance(root->left) >= 0) return right_rotate(root);
 
-    if (balance > 1 && get_balance(root->left) < 0)
-    {
+    if (balance > 1 && get_balance(root->left) < 0) {
         root->left = left_rotate(root->left);
         return right_rotate(root);
     }
 
     if (balance < -1 && get_balance(root->right) <= 0) return left_rotate(root);
 
-    if (balance < -1 && get_balance(root->right) > 0)
-    {
+    if (balance < -1 && get_balance(root->right) > 0) {
         root->right = right_rotate(root->right);
         return left_rotate(root);
     }
@@ -167,8 +149,7 @@ AVLNode *delete_node(AVLNode *root, int key)
 }
 
 // 查找节点
-int search_node(AVLNode *root, int key)
-{
+int search_node(AVLNode *root, int key) {
     if (!root) return 0;
     if (key == root->key) return 1;
     if (key < root->key) return search_node(root->left, key);
@@ -176,36 +157,30 @@ int search_node(AVLNode *root, int key)
 }
 
 // 创建 AVL 树
-AVLTree *create_avl_tree()
-{
+AVLTree *create_avl_tree() {
     AVLTree *tree = (AVLTree *)malloc(sizeof(AVLTree));
     tree->root = NULL;
     return tree;
 }
 
 // 插入 AVL 树节点
-void insert_avl_tree(AVLTree *tree, int key)
-{
+void insert_avl_tree(AVLTree *tree, int key) {
     tree->root = insert_node(tree->root, key);
 }
 
 // 删除 AVL 树节点
-void delete_avl_tree(AVLTree *tree, int key)
-{
+void delete_avl_tree(AVLTree *tree, int key) {
     tree->root = delete_node(tree->root, key);
 }
 
 // 搜索 AVL 树节点
-int search_avl_tree(AVLTree *tree, int key)
-{
+int search_avl_tree(AVLTree *tree, int key) {
     return search_node(tree->root, key);
 }
 
 // 递归释放节点
-void free_node(AVLNode *node)
-{
-    if (node)
-    {
+void free_node(AVLNode *node) {
+    if (node) {
         free_node(node->left);
         free_node(node->right);
         free(node);
@@ -213,10 +188,8 @@ void free_node(AVLNode *node)
 }
 
 // 释放 AVL 树
-void free_avl_tree(AVLTree *tree)
-{
-    if (tree)
-    {
+void free_avl_tree(AVLTree *tree) {
+    if (tree) {
         free_node(tree->root);
         free(tree);
     }

@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
-class JsonNode : public std::enable_shared_from_this<JsonNode> {
+class JsonNode : public std::enable_shared_from_this<JsonNode>
+{
   public:
     std::unordered_map<std::string, std::shared_ptr<JsonNode>> children;
     virtual ~JsonNode() = default;
@@ -22,7 +23,8 @@ class JsonNode : public std::enable_shared_from_this<JsonNode> {
     virtual std::string to_json();
 };
 
-class JsonStringNode : public JsonNode {
+class JsonStringNode : public JsonNode
+{
   public:
     JsonStringNode(const std::string &val);
     std::string value;
@@ -31,7 +33,8 @@ class JsonStringNode : public JsonNode {
     std::string display(int depth) override;
 };
 
-class JsonListNode : public JsonNode {
+class JsonListNode : public JsonNode
+{
   public:
     JsonListNode();
     JsonListNode(const std::vector<std::shared_ptr<JsonNode>> &val);
@@ -41,7 +44,8 @@ class JsonListNode : public JsonNode {
     std::string display(int depth) override;
 };
 
-class JsonBoolNode : public JsonNode {
+class JsonBoolNode : public JsonNode
+{
   public:
     JsonBoolNode(bool val);
     bool value;
@@ -50,7 +54,8 @@ class JsonBoolNode : public JsonNode {
     std::string display(int depth) override;
 };
 
-class JsonParser {
+class JsonParser
+{
   public:
     std::shared_ptr<JsonNode> parse(const std::string &jsonString);
 

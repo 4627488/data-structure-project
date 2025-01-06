@@ -1,5 +1,5 @@
 # 定义源文件和输出文件
-DIRS = procs maze family avl_tree huffman subway bus b_tree sort json-parser-tree
+DIRS = procs maze family avl_tree huffman subway bus b_tree sort json_parser_tree
 
 SRC_EXTENSIONS = c cpp h
 DIST_DIR = dist

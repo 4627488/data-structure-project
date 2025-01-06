@@ -5,7 +5,7 @@ LDFLAGS =
 SRC_DIR = .
 OBJ_DIR = ./obj
 BIN_DIR = ./bin
-JSON_PARSER_DIR = ../json-parser-tree
+JSON_PARSER_DIR = ../json_parser_tree
 
 SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(JSON_PARSER_DIR)/JsonParser.cpp)
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_FILES))

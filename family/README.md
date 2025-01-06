@@ -19,7 +19,7 @@
 
 ## 构建步骤
 
-1. 至少下载 `family` 目录和 `json-parser-tree` 目录下的所有文件，因为 `json-parser-tree` 是依赖项，具体参考 `Makefile` 文件。
+1. 至少下载 `family` 目录和 `json_parser_tree` 目录下的所有文件，因为 `json_parser_tree` 是依赖项，具体参考 `Makefile` 文件。
 2. 在项目根目录下执行以下命令，构建并运行程序：
 
 ```sh

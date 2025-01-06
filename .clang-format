@@ -3,3 +3,4 @@ IndentWidth: 4
 AllowShortIfStatementsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
 SortIncludes: false # 禁用include排序，避免置换windows.h和psapi.h的顺序
+BreakBeforeBraces: Allman

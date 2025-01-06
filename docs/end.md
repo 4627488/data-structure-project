@@ -2,13 +2,24 @@
 
 ## 行数统计
 
-```
-{{ code_line_summary }}
-```
+| 类型 | 题目 | 数据结构 | 行数 |
+| --- | --- | --- | --- |
+| 必做题 | 系统进程统计 | 链表 | {{ procs_lines }} 行 |
+|  | 迷宫问题 | 栈与队列 | {{ maze_lines }} 行 |
+|  | 家谱管理系统 | 树 | {{ family_lines }} 行 |
+|  | 平衡二叉树编程 | 二叉树 | {{ avl_tree_lines }} 行 |
+|  | Huffman编码与解码 | Huffman编码、二叉树 | {{ huffman_lines }} 行 |
+|  | 地铁修建 | 图 | {{ subway_lines }} 行 |
+|  | 公交线路提示 | 图 | {{ bus_lines }} 行 |
+|  | B-树应用 | 查找 | {{ b_tree_lines }} 行 |
+|  | 排序算法比较 | 排序 | {{ sort_lines }} 行 |
+| 选做题 | 树的应用 | 树 | {{ json_parser_tree_lines }} 行 |
+| 总计 |  |  | {{ total_lines }} 行 |
+
 
 ## 项目总结
 
-本次课设，我完成了9道必做题和一道选做题的全部内容，总行数为 {{ total_lines }} 行。项目中实现了图、树、栈、队列等多种数据结构，解决了地铁修建、迷宫问题、JSON解析器、Huffman编码与解码、家谱管理系统、公交线路提示系统、AVL树等实际问题。通过本次课程设计，我不仅加深了对数据结构基本概念和算法的理解，还提升了编程能力和解决问题的能力。
+本次课设，我完成了9道必做题和一道选做题的全部要求，总行数为 {{ total_lines }} 行。项目中实现了图、树、栈、队列等多种数据结构，解决了地铁修建、迷宫问题、JSON解析器、Huffman编码与解码、家谱管理系统、公交线路提示系统、AVL树等实际问题。通过本次课程设计，我不仅加深了对数据结构基本概念和算法的理解，还提升了编程能力和解决问题的能力。
 
 项目的实施过程包括需求分析、设计方案、编码实现、测试调试以及优化完善。首先，我对项目需求进行明确，确定需要实现的数据结构和功能。然后，根据需求设计数据结构和算法，并绘制相关的类图和流程图。接着按照设计方案进行编码，逐步实现各个模块和功能，并通过编写测试用例进行单元测试和集成测试，修复发现的问题。最后，基于性能分析对代码进行优化，提高运行效率和稳定性。
 
@@ -20,7 +31,6 @@
 
 ## 后记
 
-本报告所提及的源码均可在我的 GitHub 仓库中查看，地址为 [github.com/4627488/data-structure-project](https://github.com/4627488/data-structure-project)。
+本报告所提及的源码和全部测试用例均可在我的 GitHub 仓库中查看，地址为 [github.com/4627488/data-structure-project](https://github.com/4627488/data-structure-project)。
 
-本报告采用 CC BY-NC-SA 4.0 协议发布。
-![](https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png){ width=10% }
+本报告采用 CC BY-NC-SA 4.0 协议 ![](https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.eu.png){ width=10% } 公开。

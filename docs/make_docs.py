@@ -15,7 +15,7 @@ DIRS = [
     "bus",
     "b_tree",
     "sort",
-    "json-parser-tree",
+    "json_parser_tree",
 ]
 SRC_EXTENSIONS = ["c", "cpp", "h"]
 DIST_DIR = "dist"

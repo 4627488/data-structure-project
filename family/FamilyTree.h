@@ -7,7 +7,8 @@
 #include <memory>
 #include <string>
 
-class FamilyTree {
+class FamilyTree
+{
   public:
     std::map<std::string, Member>
         members; // 成员列表, key 为姓名, value 为成员对象
@@ -25,7 +26,7 @@ class FamilyTree {
                                const std::string &name2);       // 确定两人关系
     void addChild(const std::string &parentName, Member child); // 添加孩子
     void deleteMember(const std::string &name, bool isForce,
-                      bool isRoot);        // 删除成员
+                      bool isRoot);               // 删除成员
     void modifyMember(const std::string &name);   // 修改成员信息
     bool verifyDate(const std::string &rootName); // 验证家族树的日期是否合法
   private:

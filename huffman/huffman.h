@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct HuffmanNode {
+typedef struct HuffmanNode
+{
     char data;
     unsigned freq;
     struct HuffmanNode *left, *right;
 } HuffmanNode;
 
-typedef struct MinHeap {
+typedef struct MinHeap
+{
     unsigned size;
     unsigned capacity;
     HuffmanNode **array;

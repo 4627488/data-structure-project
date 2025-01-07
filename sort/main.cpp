@@ -58,14 +58,14 @@ void measureSortTime(void (*sortFunc)(std::vector<int> &),
               << std::endl;
 }
 
-void countFrequency(const std::vector<int> &sample) {
-    std::unordered_map<int, int> frequency;
+void countFreq(const std::vector<int> &sample) {
+    std::unordered_map<int, int> freq;
     for (const auto &num : sample) {
-        frequency[num]++;
+        freq[num]++;
     }
 
-    std::vector<std::pair<int, int>> freqVec(frequency.begin(),
-                                             frequency.end());
+    std::vector<std::pair<int, int>> freqVec(freq.begin(),
+                                             freq.end());
     std::sort(freqVec.begin(), freqVec.end(),
               [](const auto &a, const auto &b) { return a.second > b.second; });
 
@@ -92,7 +92,7 @@ int main() {
         measureSortTime(radixSort, sample, "基数排序");
     }
 
-    countFrequency(samples[0]);
+    countFreq(samples[0]);
 
     return 0;
 }

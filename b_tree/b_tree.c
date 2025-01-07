@@ -339,3 +339,27 @@ void freeBTree(BTree *tree) {
     }
     free(tree);
 }
+
+void print_b(BTreeNode *node, int level) {
+    if (node != NULL) {
+        printf("Level %d: ", level);
+        for (int i = 0; i < node->numKeys; i++) {
+            printf("%d ", node->keys[i]);
+        }
+        printf("\n");
+
+        if (!node->isLeaf) {
+            for (int i = 0; i <= node->numKeys; i++) {
+                print_b(node->children[i], level + 1);
+            }
+        }
+    }
+}
+
+void printBTree(BTree *tree) {
+    if (tree->root != NULL) {
+        print_b(tree->root, 0);
+    } else {
+        printf("The tree is empty.\n");
+    }
+}

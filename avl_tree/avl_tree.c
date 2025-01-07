@@ -1,6 +1,7 @@
 #include "avl_tree.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 // 获取节点的高度
 int height(AVLNode *node) {
@@ -193,4 +194,22 @@ void free_avl_tree(AVLTree *tree) {
         free_node(tree->root);
         free(tree);
     }
+}
+
+// 打印结构
+void print_inorder(AVLNode *node) {
+    if (node != NULL) {
+        print_inorder(node->left);
+        printf("Key: %d, Height: %d\n", node->key, node->height);
+        print_inorder(node->right);
+    }
+}
+
+void print_avl_tree(AVLTree *tree) {
+    if (tree == NULL || tree->root == NULL) {
+        printf("The AVL tree is empty.\n");
+        return;
+    }
+    printf("AVL Tree (inorder):\n");
+    print_inorder(tree->root);
 }

@@ -19,5 +19,6 @@ void insert(BTree *tree, int key);
 void removeKey(BTree *tree, int key);
 int search(BTree *tree, int key);
 void freeBTree(BTree *tree);
+void printBTree(BTree *tree);
 
 #endif // B_TREE_H

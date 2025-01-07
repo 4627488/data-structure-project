@@ -26,8 +26,8 @@ int main() {
     for (int i = 0; i < 10000; i++) {
         insert(tree, primes[i]);
     }
-
-    // 查询200-300的数是否在B树中
+    // printBTree(tree);
+    //  查询200-300的数是否在B树中
     int queries[10001];
     for (int i = 200; i <= 300; i++) {
         queries[i - 200] = i;

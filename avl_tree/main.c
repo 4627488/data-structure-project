@@ -32,6 +32,27 @@ void write_results(const char *filename, int *nums, int size, AVLTree *tree) {
 }
 
 int main() {
+    // 测试
+    AVLTree *tree2 = create_avl_tree();
+    insert_avl_tree(tree2, 50);
+    insert_avl_tree(tree2, 30);
+    insert_avl_tree(tree2, 70);
+    insert_avl_tree(tree2, 20);
+    insert_avl_tree(tree2, 40);
+    insert_avl_tree(tree2, 60);
+    insert_avl_tree(tree2, 80);
+    insert_avl_tree(tree2, 10);
+    insert_avl_tree(tree2, 25);
+    insert_avl_tree(tree2, 35);
+    insert_avl_tree(tree2, 45);
+    insert_avl_tree(tree2, 55);
+    insert_avl_tree(tree2, 65);
+    insert_avl_tree(tree2, 75);
+    insert_avl_tree(tree2, 85);
+
+    print_avl_tree(tree2);
+    free_avl_tree(tree2);
+
     AVLTree *tree = create_avl_tree();
     int primes[10000];
     generate_primes(primes, 10000);
@@ -39,6 +60,7 @@ int main() {
     for (int i = 0; i < 10000 && primes[i] != 0; i++) {
         insert_avl_tree(tree, primes[i]);
     }
+    //print_avl_tree(tree);
 
     int query1[101];
     for (int i = 200; i <= 300; i++) {
@@ -51,6 +73,7 @@ int main() {
             delete_avl_tree(tree, i);
         }
     }
+    //print_avl_tree(tree);
 
     int query2[101];
     for (int i = 600; i <= 700; i++) {
@@ -63,6 +86,7 @@ int main() {
     for (int i = 2; i <= 1000; i += 2) {
         insert_avl_tree(tree, i);
     }
+    //print_avl_tree(tree);
 
     int query3[51];
     for (int i = 100; i <= 200; i += 2) {

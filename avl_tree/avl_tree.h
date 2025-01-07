@@ -17,5 +17,6 @@ void insert_avl_tree(AVLTree *tree, int key);
 void delete_avl_tree(AVLTree *tree, int key);
 int search_avl_tree(AVLTree *tree, int key);
 void free_avl_tree(AVLTree *tree);
+void print_avl_tree(AVLTree *tree);
 
 #endif // AVL_TREE_H

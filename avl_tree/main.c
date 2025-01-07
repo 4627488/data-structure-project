@@ -60,7 +60,7 @@ int main() {
     for (int i = 0; i < 10000 && primes[i] != 0; i++) {
         insert_avl_tree(tree, primes[i]);
     }
-    //print_avl_tree(tree);
+    // print_avl_tree(tree);
 
     int query1[101];
     for (int i = 200; i <= 300; i++) {
@@ -73,20 +73,20 @@ int main() {
             delete_avl_tree(tree, i);
         }
     }
-    //print_avl_tree(tree);
-
+    // print_avl_tree(tree);
+    int size = 0;
     int query2[101];
     for (int i = 600; i <= 700; i++) {
         if (is_prime(i)) {
-            query2[i - 600] = i;
+            query2[size++] = i;
         }
     }
-    write_results("tree2.txt", query2, 101, tree);
+    write_results("tree2.txt", query2, size, tree);
 
     for (int i = 2; i <= 1000; i += 2) {
         insert_avl_tree(tree, i);
     }
-    //print_avl_tree(tree);
+    // print_avl_tree(tree);
 
     int query3[51];
     for (int i = 100; i <= 200; i += 2) {

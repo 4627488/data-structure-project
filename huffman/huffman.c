@@ -47,12 +47,6 @@ MinHeap *createMinHeap(unsigned capacity) {
     return minHeap;
 }
 
-void buildMinHeap(MinHeap *minHeap) {
-    int n = minHeap->size - 1;
-    for (int i = (n - 1) / 2; i >= 0; --i) {
-        minHeapify(minHeap, i);
-    }
-}
 
 HuffmanNode *extractMin(MinHeap *minHeap) {
     HuffmanNode *temp = minHeap->array[0];
@@ -74,12 +68,11 @@ void insertMinHeap(MinHeap *minHeap, HuffmanNode *node) {
 
 MinHeap *createAndBuildMinHeap(char data[], int freq[], int size) {
     MinHeap *minHeap = createMinHeap(size);
-
-    for (int i = 0; i < size; ++i)
-        minHeap->array[i] = createNode(data[i], freq[i]);
-
-    minHeap->size = size;
-    buildMinHeap(minHeap);
+    for (int i = 0; i < size; ++i) {
+        //printf("Inserting %c %d\n", data[i], freq[data[i]]);
+        insertMinHeap(minHeap, createNode(data[i], freq[data[i]]));
+    }
+    printMinHeap(minHeap);
 
     return minHeap;
 }
@@ -87,7 +80,7 @@ MinHeap *createAndBuildMinHeap(char data[], int freq[], int size) {
 HuffmanNode *buildHuffmanTree(char data[], int freq[], int size) {
     HuffmanNode *left, *right, *top;
     MinHeap *minHeap = createAndBuildMinHeap(data, freq, size);
-
+    printMinHeap(minHeap);
     while (minHeap->size != 1) {
         left = extractMin(minHeap);
         right = extractMin(minHeap);
@@ -190,9 +183,9 @@ void encodeFile(const char *inputFile, const char *outputFile,
     for (int i = 0; i < 257; i++) {
         if (freq[i] > 0) {
             data[size++] = (char)i;
+            printf("%c: %d\n", (char)i, freq[i]);
         }
     }
-
     HuffmanNode *root = buildHuffmanTree(data, freq, size);
 
     char codes[257][256] = {{0}}; // 编码表

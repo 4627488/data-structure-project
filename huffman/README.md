@@ -139,3 +139,15 @@ HuffmanNode *buildHuffmanTree()
 
 通过多次提取最小节点并合并，最终形成哈夫曼树。  
 时间复杂度：整体复杂度为 $O(n log n)$，其中 $n$ 为字符种类数量。
+
+## 测试结果
+
+编码 `source.txt` 文件，生成 `code.dat` 和 `Huffman.txt` 文件，解码后生成 `recode.txt` 文件。
+
+```sh
+make test
+```
+
+测试结果显示编码和解码过程正确，`recode.txt` 和 `source.txt` 文件内容一致。
+
+一开始编码文件大小为 6,281 字节，编码后文件大小为 3,497 字节，压缩率约为 44.3%。
